@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // Material UI
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Card, CardActions, CardContent } from '@material-ui/core';
-import { Box, Button } from "@material-ui/core";
+import { Box, Button, IconButton, Slider } from "@material-ui/core";
 
 // Icons
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import StarIcon from '@material-ui/icons/Star';
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
 import StarOutlinedIcon from '@material-ui/icons/StarOutlined';
 
 // Components
@@ -20,10 +22,28 @@ const useStyles = makeStyles({
         maxWidth: 275,
         margin: "auto",
         marginTop: "20px",
-        textAlign: "center"
+        textAlign: "center",
+        borderRadius: "10px"
     },
-    pos: {
-        marginBottom: 12,
+    bottom: {
+        marginBottom: "35px"
+    },
+    auto: {
+        margin: "auto"
+    },
+    center: {
+        display: "flex",
+        justifyContent: "center"
+    },
+    counter: {
+        marginBlockStart: 0,
+        marginBlockEnd: 0,
+    },
+    counterBtn: {
+        borderRadius: "1em",
+        backgroundColor: "#aebedf",
+        marginLeft: "20px",
+        marginRight: "20px"
     },
     star: {
         position: "absolute",
@@ -37,12 +57,49 @@ const useStyles = makeStyles({
         margin: "auto",
         width: "60vw",
         height: "60vw",
-        backgroundColor: "#EDFED9"
+        backgroundColor: "#552014"
     }
 });
 
+const PrettoSlider = withStyles({
+    root: {
+        color: '#aebedf',
+        height: 8,
+    },
+    thumb: {
+        height: 24,
+        width: 24,
+        backgroundColor: '#fff',
+        border: '2px solid currentColor',
+        marginTop: -8,
+        marginLeft: -12,
+        '&:focus, &:hover, &$active': {
+            boxShadow: 'inherit',
+        },
+    },
+    active: {},
+    valueLabel: {
+        left: 'calc(-50% + 4px)',
+    },
+    track: {
+        height: 10,
+        borderRadius: 5,
+    },
+    rail: {
+        height: 10,
+        borderRadius: 5,
+    },
+})(Slider);
+
 function Thread() {
+    const [count, setCount] = useState({
+        whole: 0,
+        partial: 0,
+    });
+
     const classes = useStyles();
+
+    const onChange = (e, val) => setCount({ ...count, partial: val });
 
     return (
         <>
@@ -51,26 +108,46 @@ function Thread() {
 
             <Card className={classes.root}>
                 <CardContent>
-                    <Box className={classes.color}>
-                        <StarOutlinedIcon className={classes.star} />
-                    </Box>
-                    <Typography variant="h5" component="h2">
-                        Cocoa - Very Dark
-                </Typography>
-                    <Typography className={classes.pos} color="textSecondary">
-                        Partial Quantity slider
-                </Typography>
-                    <Typography variant="body2" component="p">
-                        Change Quantity
-                <br />
-                       Favorite
-
-                        <StarIcon />
+                    <Box className={classes.bottom}>
+                        <Box className={classes.color}>
+                            <StarOutlinedIcon className={classes.star} />
+                        </Box>
+                        <Typography variant="h5" component="h2">
+                            Cocoa - Very Dark
                     </Typography>
+                    </Box>
+                    <Box>
+                        <Typography component="p">Partial Quantity</Typography>
+                        <PrettoSlider
+                            valueLabelDisplay="auto"
+                            aria-label="pretto slider"
+                            defaultValue={0}
+                            step={25}
+                            name="slider"
+                            onChangeCommitted={(e, val) => onChange(e, val)}
+                        />
+                        <Typography component="p">Change Full Quantity</Typography>
+                        <Box className={classes.center}>
+                            <IconButton
+                                className={classes.counterBtn}
+                                onClick={() => setCount({ ...count, whole: (count.whole + 1) })}
+                            >
+                                <AddIcon />
+                            </IconButton>
+                            <h1 className={classes.counter}>{count.whole}</h1>
+                            <IconButton
+                                className={classes.counterBtn}
+                                onClick={() => (count.whole > 0) ? setCount({ ...count, whole: count.whole - 1 }) : setCount({ ...count, whole: 0 })}
+                            >
+                                <RemoveIcon />
+                            </IconButton>
+                        </Box>
+                    </Box>
                 </CardContent>
                 <CardActions>
-                    <Button size="small">Add to project</Button>
+                    <Button className={classes.auto} size="small">Add to project</Button>
                 </CardActions>
+
             </Card>
         </>
     );
