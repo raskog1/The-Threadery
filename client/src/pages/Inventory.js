@@ -1,20 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import API from "../utils/API";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
-import { Container, Fab } from "@material-ui/core";
+import { Container, Paper, TextField } from "@material-ui/core";
 
 // Components
 import BackBtn from "../components/BackBtn";
 import HomeBtn from "../components/HomeBtn";
-import SmThread from "../components/SmThread";
+import Results from "../components/Results";
 import TabBar from "../components/TabBar";
 
 const useStyles = makeStyles({
     root: {
         flexGrow: 1,
         maxWidth: 500,
-        borderRadius: 10,
         margin: "auto",
         width: "90%",
         position: "relative",
@@ -23,7 +23,6 @@ const useStyles = makeStyles({
     threads: {
         height: "70vh",
         overflow: "auto",
-
         flexDirection: "column",
         justifyContent: "flex-end"
     },
@@ -35,151 +34,81 @@ const useStyles = makeStyles({
     }
 });
 
-const testProps = [
-    {
-        "num": 1,
-        "name": "White Tin",
-        "color": "#EFEEF0",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 2,
-        "name": "Tin",
-        "color": "#C5C4C9",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 3,
-        "name": "Tin - Medium",
-        "color": "#B0B0B5",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 4,
-        "name": "Tin - Dark",
-        "color": "#9C9B9D",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 5,
-        "name": "Driftwood - Light",
-        "color": "#E3CCBE",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 6,
-        "name": "Driftwood - Medium Light",
-        "color": "#DCC6B8",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 7,
-        "name": "Driftwood",
-        "color": "#CCB8AA",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 8,
-        "name": "Driftwood - Dark",
-        "color": "#9D7D71",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 9,
-        "name": "Cocoa - Very Dark",
-        "color": "#552014",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 10,
-        "name": "Tender Green - Very Light",
-        "color": "#EDFED9",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 11,
-        "name": "Tender Green - Light",
-        "color": "#E2EDB5",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    },
-    {
-        "num": 12,
-        "name": "Tender Green",
-        "color": "#CDD99A",
-        "quantity": 0,
-        "desiredQty": 0,
-        "favorite": false,
-        "wanted": false,
-        "projects": []
-    }
-]
-
 function Inventory() {
+    const [input, setInput] = useState("");
+    const [allThreads, setAllThreads] = useState({ threads: [], isFetching: false })
+    const [favThreads, setFavThreads] = useState([]);
+    const [ownedThreads, setOwnedThreads] = useState([]);
+    const [active, setActive] = useState({ all: true, fav: false, owned: false });
+
+    useEffect(() => {
+        const getThreads = async () => {
+            try {
+                setAllThreads({ ...allThreads, isFetching: true })
+                const allResponse = await API.getAllDMC();
+                setAllThreads({ threads: allResponse.data, isFetching: false })
+                // const favResponse = await API.getFavorites();
+                // setFavThreads(favResponse);
+                // const ownResponse = await API.getOwned();
+                // setOwnedThreads(ownResponse);
+            } catch (error) {
+                console.log(error);
+                setAllThreads({ ...allThreads, isFetching: false })
+            }
+        };
+        getThreads();
+    }, []);
+
     const classes = useStyles();
+
+    const setAll = () => {
+        setActive({ all: true, fav: false, owned: false })
+    }
+
+    const setFav = () => {
+        setActive({ all: false, fav: true, owned: false })
+    }
+
+    const setOwned = () => {
+        setActive({ all: false, fav: false, owned: true })
+    }
+
+    const getActive = () => {
+        if (active.owned) {
+            return ownedThreads;
+        } else if (active.fav) {
+            return favThreads;
+        } else {
+            return allThreads.threads;
+        }
+    }
+
+    const handleChange = (event) => {
+        setInput(event.target.value);
+    }
+
+    const handleSubmit = (event) => {
+        console.log(input)
+    }
 
     return (
         <>
             <BackBtn />
             <HomeBtn />
-            <Container>
-                <Fab variant="extended" className={classes.sortBtn}>ID</Fab>
-                <Fab variant="extended" className={classes.sortBtn}>Name</Fab>
-                <Fab variant="extended" className={classes.sortBtn}>Qty</Fab>
-            </Container>
+            {/* <Paper className={classes.root}>
+                <TextField
+                    fullWidth
+                    id="outlined-helperText"
+                    type="search"
+                    label="Search by id or name..."
+                    // variant="outlined"
+                    size="small"
+                />
+            </Paper> */}
 
-            <Container className={classes.threads}>
-                {testProps.map((tColor) => (
-                    <a href="./thread" className={classes.sansUnderline}>
-                        <SmThread color={tColor} />
-                    </a>
-                ))}
-            </Container>
+            <Results threads={getActive()} />
 
-            <TabBar className="fixed-bottom" />
+            <TabBar className="fixed-bottom" handleAdd={setAll} handleFav={setFav} handleOwned={setOwned} />
         </>
     )
 }

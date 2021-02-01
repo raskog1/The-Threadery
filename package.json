@@ -4,7 +4,10 @@
   "description": "Application to track and sort your embroidery projects and supplies.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "node server",
+    "server": "nodemon server"
   },
   "repository": {
     "type": "git",
@@ -19,6 +22,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "concurrently": "^5.3.0",
+    "config": "^3.3.3",
     "express": "^4.17.1",
     "mongoose": "^5.11.14"
   },

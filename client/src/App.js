@@ -10,19 +10,19 @@ import Thread from "./pages/Thread";
 import Inventory from "./pages/Inventory";
 import Projects from "./pages/Projects";
 import Wishlist from "./pages/Wishlist";
-
-
+import Entry from "./pages/Entry";
 
 function App() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" component={Login} />
+        <Route exact path="/" component={Landing} />
         <Route exact path="/home" component={Landing} />
         <Route exact path="/inventory" component={Inventory} />
         <Route exact path="/projects" component={Projects} />
         <Route exact path="/wishlist" component={Wishlist} />
         <Route exact path="/thread" component={Thread} />
+        <Route exact path="/entry" component={Entry} />
       </Switch>
     </Router>
   );

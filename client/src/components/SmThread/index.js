@@ -38,7 +38,7 @@ function SmThread(props) {
             ></Box>
             <Grid container
                 direction="row"
-                justify="space-between"
+                justify="left"
                 alignItems="center">
                 <Grid item>
                     <h3 className={classes.fixMargin}>{props.color.num}</h3>

@@ -166,7 +166,7 @@ function Thread() {
 
                 </CardContent>
                 <CardActions>
-                    <Button className={classes.auto} size="small">Add to project</Button>
+                    <Button className={classes.auto} size="small">Add to wishlist</Button>
                 </CardActions>
 
             </Card>
