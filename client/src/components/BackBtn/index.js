@@ -8,7 +8,8 @@ import BackspaceIcon from '@material-ui/icons/Backspace';
 const useStyles = makeStyles((theme) => ({
     margin: {
         margin: theme.spacing(1),
-        backgroundColor: "blue"
+        backgroundColor: "blue",
+        border: "3px white dashed"
     }
 }));
 
@@ -16,9 +17,11 @@ function BackBtn() {
     const classes = useStyles();
 
     return (
-        <Fab color="secondary" aria-label="add" className={classes.margin}>
-            <BackspaceIcon />
-        </Fab>
+        <a href="#">
+            <Fab color="secondary" aria-label="add" className={classes.margin}>
+                <BackspaceIcon />
+            </Fab>
+        </a>
     )
 }
 

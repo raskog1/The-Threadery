@@ -2,7 +2,7 @@ import React from "react";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Container, Fab } from "@material-ui/core";
+import { Container, Fab } from "@material-ui/core";
 
 // Components
 
@@ -28,10 +28,13 @@ const useStyles = makeStyles({
         width: "70vw",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center"
+        justifyContent: "center",
     },
     handwriting: {
         fontFamily: "'Cedarville Cursive', cursive"
+    },
+    sansUnderline: {
+        textDecoration: "none"
     }
 })
 
@@ -45,9 +48,15 @@ function Landing() {
                 <h3 className={classes.handwriting}>You've got brains in your head, you've got feet in your shoes.  You can steer yourself any way you choose.</h3>
             </Container>
             <Container className={classes.btnContainer}>
-                <Fab variant="extended" className={classes.buttons} aria-label="add">Inventory</Fab>
-                <Fab variant="extended" className={classes.buttons} aria-label="add">Shopping List</Fab>
-                <Fab variant="extended" className={classes.buttons} aria-label="add">Projects</Fab>
+                <a href="/inventory" className={classes.sansUnderline}>
+                    <Fab variant="extended" className={classes.buttons} aria-label="add">Inventory</Fab>
+                </a>
+                <a href="/wishlist" className={classes.sansUnderline}>
+                    <Fab variant="extended" className={classes.buttons} aria-label="add">Wishlist</Fab>
+                </a>
+                <a href="/projects" className={classes.sansUnderline}>
+                    <Fab variant="extended" className={classes.buttons} aria-label="add">Projects</Fab>
+                </a>
             </Container>
         </>
     )

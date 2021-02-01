@@ -8,7 +8,8 @@ import HomeIcon from '@material-ui/icons/Home';
 const useStyles = makeStyles((theme) => ({
     margin: {
         margin: theme.spacing(1),
-        float: "right"
+        float: "right",
+        border: "3px white dashed"
     }
 }));
 
@@ -16,9 +17,11 @@ function HomeBtn() {
     const classes = useStyles();
 
     return (
-        <Fab color="secondary" aria-label="add" className={classes.margin}>
-            <HomeIcon />
-        </Fab>
+        <a href="/home">
+            <Fab color="secondary" aria-label="add" className={classes.margin}>
+                <HomeIcon />
+            </Fab>
+        </a>
     )
 }
 
