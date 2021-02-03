@@ -17,7 +17,7 @@ function BackBtn() {
     const classes = useStyles();
 
     return (
-        <a href="#">
+        <a href="/inventory">
             <Fab color="secondary" aria-label="add" className={classes.margin}>
                 <BackspaceIcon />
             </Fab>

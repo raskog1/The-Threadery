@@ -12,6 +12,10 @@ const DMCSChema = new mongoose.Schema(
         },
         color: {
             type: String
+        },
+        note: {
+            type: String,
+            default: ""
         }
     }
 );

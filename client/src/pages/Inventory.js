@@ -25,8 +25,8 @@ function Inventory() {
                 setAllThreads({ threads: allResponse.data, isFetching: false })
                 const favResponse = await API.getFavorites();
                 setFavThreads(favResponse.data);
-                // const ownResponse = await API.getOwned();
-                // setOwnedThreads(ownResponse);
+                const ownResponse = await API.getOwned();
+                setOwnedThreads(ownResponse.data);
             } catch (error) {
                 console.log(error);
                 setAllThreads({ ...allThreads, isFetching: false })

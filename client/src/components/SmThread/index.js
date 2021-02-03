@@ -42,7 +42,7 @@ function SmThread(props) {
             ></Box>
             <Grid container
                 direction="row"
-                justify="left"
+                justify="flex-start"
                 alignItems="center">
                 <Grid item>
                     <h3 className={classes.fixMargin}>{props.color.num}</h3>

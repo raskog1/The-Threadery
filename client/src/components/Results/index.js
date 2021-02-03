@@ -26,10 +26,13 @@ function Results(props) {
             {props.threads.map((tColor) => (
                 <Link to={{
                     pathname: "/thread",
-                    search: "?color=" + tColor.num
+                    search: "?color=" + tColor.num,
+                    state: { tColor }
                 }}
+                    className={classes.sansUnderline}
+                    key={tColor.num}
                 >
-                    <SmThread key={tColor.num} color={tColor} />
+                    <SmThread color={tColor} />
                 </Link>
             ))}
         </Container>

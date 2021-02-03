@@ -41,7 +41,7 @@ function TabBar(props) {
                 className={classes.tabs}
                 onChange={handleChange}
                 variant="fullWidth"
-                indicatorColor="secondary"
+                // indicatorColor="secondary"
                 aria-label="icon label tabs example"
             >
                 <Tab label="ALL" onClick={props.handleAdd} />

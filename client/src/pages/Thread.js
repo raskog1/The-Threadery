@@ -98,8 +98,14 @@ const PrettoSlider = withStyles({
     },
 })(Slider);
 
-function Thread() {
-    const [color, setColor] = useState({ name: "", color: "", num: "" });
+function Thread(props) {
+    const { tColor } = props.location.state;
+
+    const [color, setColor] = useState({
+        num: tColor.num,
+        name: tColor.name,
+        color: tColor.color
+    });
     const [count, setCount] = useState(0);
     const [partial, setPartial] = useState(0);
     const [favorite, setFavorite] = useState(false);
@@ -110,7 +116,7 @@ function Thread() {
                 const query = document.location.search;
                 const colorId = query.split("=")[1];
 
-                console.log("colorId", colorId);
+                // console.log("colorId", colorId);
 
                 if (colorId) { //try to get from owned/fav first, if doesn't exist, get from masterfile  
                     const currentFavorite = await API.getOneFavorite(colorId);
@@ -121,9 +127,6 @@ function Thread() {
                         setFavorite(true);
                         return;
                     }
-                    const currentColor = await API.getOneDMC(colorId);
-                    const { num, name, color } = currentColor.data;
-                    setColor({ num, name, color });
                 }
             } catch (error) {
                 console.log(error);
@@ -131,6 +134,19 @@ function Thread() {
         };
         getColor();
     }, []);
+
+    useEffect(() => {
+        if (count > 0) {
+            const newThread = {
+                num: color.num,
+                name: color.name,
+                color: color.color,
+                partial: partial,
+                count: count
+            };
+            API.addOwned(newThread);
+        }
+    }, [count])
 
     const classes = useStyles();
 
