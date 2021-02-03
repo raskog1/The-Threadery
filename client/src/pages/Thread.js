@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import API from "../utils/API";
 
 // Material UI
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -40,7 +41,6 @@ const useStyles = makeStyles({
     },
     counterBtn: {
         borderRadius: "1em",
-        backgroundColor: "#aebedf",
         marginLeft: "20px",
         marginRight: "20px"
     },
@@ -63,7 +63,7 @@ const useStyles = makeStyles({
         margin: "auto",
         width: "60vw",
         height: "60vw",
-        backgroundColor: "#552014"
+        backgroundColor: "#fff"
     }
 });
 
@@ -99,9 +99,38 @@ const PrettoSlider = withStyles({
 })(Slider);
 
 function Thread() {
+    const [color, setColor] = useState({ name: "", color: "", num: "" });
     const [count, setCount] = useState(0);
     const [partial, setPartial] = useState(0);
     const [favorite, setFavorite] = useState(false);
+
+    useEffect(() => {
+        const getColor = async () => {
+            try {
+                const query = document.location.search;
+                const colorId = query.split("=")[1];
+
+                console.log("colorId", colorId);
+
+                if (colorId) { //try to get from owned/fav first, if doesn't exist, get from masterfile  
+                    const currentFavorite = await API.getOneFavorite(colorId);
+                    console.log(currentFavorite);
+                    if (currentFavorite.data) {
+                        const { num, name, color } = currentFavorite.data;
+                        setColor({ num, name, color });
+                        setFavorite(true);
+                        return;
+                    }
+                    const currentColor = await API.getOneDMC(colorId);
+                    const { num, name, color } = currentColor.data;
+                    setColor({ num, name, color });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        getColor();
+    }, []);
 
     const classes = useStyles();
 
@@ -111,12 +140,18 @@ function Thread() {
         if (favorite) {
             return <StarIcon
                 className={classes.favStar}
-                onClick={() => setFavorite(!favorite)}
-            />;
+                onClick={() => {
+                    setFavorite(!favorite);
+                    API.deleteFav(color.num);
+                }}
+            />
         } else if (!favorite) {
             return <StarOutlinedIcon
                 className={classes.star}
-                onClick={() => setFavorite(!favorite)}
+                onClick={() => {
+                    setFavorite(!favorite)
+                    API.addFav(color);
+                }}
             />
         }
     }
@@ -129,12 +164,12 @@ function Thread() {
             <Card className={classes.root}>
                 <CardContent>
                     <Box className={classes.bottom}>
-                        <Box className={classes.color}>
+                        <Box className={classes.color} style={{ backgroundColor: color.color }}>
                             {checkFav()}
                         </Box>
                         <Typography variant="h5" component="h2">
-                            Cocoa - Very Dark
-                    </Typography>
+                            {color.name}
+                        </Typography>
                     </Box>
 
                     <Box>

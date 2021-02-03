@@ -3,36 +3,12 @@ import API from "../utils/API";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
-import { Container, Paper, TextField } from "@material-ui/core";
 
 // Components
 import BackBtn from "../components/BackBtn";
 import HomeBtn from "../components/HomeBtn";
 import Results from "../components/Results";
 import TabBar from "../components/TabBar";
-
-const useStyles = makeStyles({
-    root: {
-        flexGrow: 1,
-        maxWidth: 500,
-        margin: "auto",
-        width: "90%",
-        position: "relative",
-        bottom: 10
-    },
-    threads: {
-        height: "70vh",
-        overflow: "auto",
-        flexDirection: "column",
-        justifyContent: "flex-end"
-    },
-    sortBtn: {
-        height: 24
-    },
-    sansUnderline: {
-        textDecoration: "none"
-    }
-});
 
 function Inventory() {
     const [input, setInput] = useState("");
@@ -47,8 +23,8 @@ function Inventory() {
                 setAllThreads({ ...allThreads, isFetching: true })
                 const allResponse = await API.getAllDMC();
                 setAllThreads({ threads: allResponse.data, isFetching: false })
-                // const favResponse = await API.getFavorites();
-                // setFavThreads(favResponse);
+                const favResponse = await API.getFavorites();
+                setFavThreads(favResponse.data);
                 // const ownResponse = await API.getOwned();
                 // setOwnedThreads(ownResponse);
             } catch (error) {
@@ -58,8 +34,6 @@ function Inventory() {
         };
         getThreads();
     }, []);
-
-    const classes = useStyles();
 
     const setAll = () => {
         setActive({ all: true, fav: false, owned: false })
@@ -83,13 +57,13 @@ function Inventory() {
         }
     }
 
-    const handleChange = (event) => {
-        setInput(event.target.value);
-    }
+    // const handleChange = (event) => {
+    //     setInput(event.target.value);
+    // }
 
-    const handleSubmit = (event) => {
-        console.log(input)
-    }
+    // const handleSubmit = (event) => {
+    //     console.log(input)
+    // }
 
     return (
         <>

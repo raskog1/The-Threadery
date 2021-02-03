@@ -4,9 +4,7 @@ import React from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { Divider, Paper, Tab, Tabs } from "@material-ui/core";
 
-import HistoryIcon from '@material-ui/icons/History';
 import StarIcon from '@material-ui/icons/Star';
-import AllInclusiveIcon from '@material-ui/icons/AllInclusive';
 
 const useStyles = makeStyles({
     root: {
@@ -37,14 +35,13 @@ function TabBar(props) {
     };
 
     return (
-        <Paper className={classes.root} elevation="24">
+        <Paper className={classes.root} elevation={24}>
             <Tabs
                 value={value}
                 className={classes.tabs}
                 onChange={handleChange}
                 variant="fullWidth"
-                indicatorColor="#d4af37"
-                textColor="#d4af37"
+                indicatorColor="secondary"
                 aria-label="icon label tabs example"
             >
                 <Tab label="ALL" onClick={props.handleAdd} />

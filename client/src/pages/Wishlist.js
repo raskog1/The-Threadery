@@ -158,7 +158,7 @@ const testProps = [
 ]
 
 function Wishlist() {
-    const [input, setInput] = useState("");
+
 
     const classes = useStyles();
 

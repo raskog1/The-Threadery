@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,9 +24,13 @@ function Results(props) {
     return (
         <Container className={classes.resultBox}>
             {props.threads.map((tColor) => (
-                <a href="./thread" className={classes.sansUnderline}>
-                    <SmThread color={tColor} />
-                </a>
+                <Link to={{
+                    pathname: "/thread",
+                    search: "?color=" + tColor.num
+                }}
+                >
+                    <SmThread key={tColor.num} color={tColor} />
+                </Link>
             ))}
         </Container>
     )

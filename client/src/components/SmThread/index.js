@@ -24,6 +24,9 @@ const useStyles = makeStyles({
         marginLeft: "10px",
         marginRight: "10px",
         fontSize: "16px"
+    },
+    sansUnderline: {
+        textDecoration: "none"
     }
 });
 
@@ -31,6 +34,7 @@ function SmThread(props) {
     const classes = useStyles();
 
     return (
+
         <Paper square className={classes.flexPaper} data-id={props.color.num}>
             <Box
                 style={{ backgroundColor: props.color.color }}
@@ -51,6 +55,7 @@ function SmThread(props) {
                 </Grid>
             </Grid>
         </Paper>
+
     )
 }
 
