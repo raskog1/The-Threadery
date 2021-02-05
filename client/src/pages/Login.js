@@ -6,19 +6,45 @@ import axios from "axios";
 import AuthContext from "../utils/AuthContext";
 import UserContext from "../utils/UserContext";
 
+// Material UI
+import { makeStyles } from '@material-ui/core/styles';
+import { Button, Card, CardContent, TextField } from "@material-ui/core";
+
 // Components
-import { Button, TextField } from "@material-ui/core";
+
+// Styles
+const useStyles = makeStyles({
+    root: {
+        maxWidth: 275,
+        margin: "auto",
+        marginTop: "30vh",
+        textAlign: "center",
+        borderRadius: "10px",
+        display: "flex",
+        justifyContent: "center",
+        border: "2px red dashed"
+    },
+    mBottom: {
+        marginBottom: 10
+    }
+})
 
 function Login() {
     const [credentials, setCredentials] = useState({
         email: "",
         password: "",
     });
+    const [type, setType] = useState({
+        login: true,
+        signup: false
+    })
 
     // Other Variables
     const { authData, setAuth } = useContext(AuthContext);
     const { setUser } = useContext(UserContext);
     const { email, password } = credentials;
+
+    const classes = useStyles();
 
     const onChange = (e) =>
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -68,32 +94,49 @@ function Login() {
         return <Redirect to="/home" />;
     }
 
+    const onSignup = () => {
+        console.log("signing up");
+    }
+
     return (
-        <>
-            <form noValidate autoComplete="on" onSubmit={(e) => onSubmit(e)}>
-                <TextField
-                    name="email"
-                    variant="outlined"
-                    color="primary"
-                    label="Email"
-                    value={email}
-                    onChange={(e) => onChange(e)}
-                />
-                <br />
-                <TextField
-                    name="password"
-                    variant="outlined"
-                    type="password"
-                    label="Password"
-                    value={password}
-                    onChange={(e) => onChange(e)}
-                />
-                <br />
-                <Button type="submit" variant="contained" color="primary" size="large">
-                    Login
-            </Button>
-            </form>
-        </>
+        <Card className={classes.root}>
+            <CardContent>
+                <form noValidate autoComplete="on" onSubmit={(e) => onSubmit(e)}>
+                    <TextField
+                        className={classes.mBottom}
+                        name="email"
+                        variant="outlined"
+                        type="email"
+                        label="Email"
+                        value={email}
+                        onChange={(e) => onChange(e)}
+                    />
+                    <br />
+                    <TextField
+                        className={classes.mBottom}
+                        name="password"
+                        variant="outlined"
+                        type="password"
+                        label="Password"
+                        value={password}
+                        onChange={(e) => onChange(e)}
+                    />
+                    <br />
+
+                    <Button color="secondary" size="medium" variant={type.signup ? "contained" : "text"}
+                        onClick={() => type.signup ? onSignup() : setType({ login: !type.login, signup: !type.signup })}
+                        style={{ float: "left" }}>
+                        Sign Up
+                    </Button>
+                    <Button color="primary" size="medium" variant={type.login ? "contained" : "text"}
+                        onClick={(e) => type.login ? onSubmit(e) : setType({ login: !type.login, signup: !type.signup })}
+                        style={{ float: "right" }}>
+                        Login
+                    </Button>
+
+                </form>
+            </CardContent>
+        </Card>
     );
 }
 

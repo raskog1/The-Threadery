@@ -16,6 +16,10 @@ const DMCSChema = new mongoose.Schema(
         note: {
             type: String,
             default: ""
+        },
+        brand: {
+            type: String,
+            default: "DMC"
         }
     }
 );

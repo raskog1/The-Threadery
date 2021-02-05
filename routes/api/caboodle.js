@@ -3,7 +3,6 @@ const router = require("express").Router();
 const auth = require("../../config/middleware/auth");
 
 const Caboodle = require("../../models/Caboodle");
-const Thread = require("../../models/Thread");
 
 // @router  POST api/caboodle
 // @desc    Create a caboodle
@@ -73,12 +72,31 @@ router.put("/drawer", auth, async (req, res) => {
         const caboodle = await Caboodle.findOne({ user: req.user.id });
         const match = caboodle.drawer.findIndex(thread => thread.num === req.body.num);
         if (match < 0) {
-            const thread = new Thread(req.body);
-            caboodle.drawer.push(thread);
-            await caboodle.save();
-            res.json(thread);
+            const thread = req.body;
+            try {
+                caboodle.drawer.push(thread);
+                await caboodle.save();
+                res.json(thread);
+            } catch (error) {
+                console.error(error.message);
+                res.status(500).send("Server Error");
+            }
+
         } else {
-            res.status(404).send("Unable to save thread"); // Don't want to send error?
+            try {
+                const update = await Caboodle.findOneAndUpdate({ user: req.user.id, "drawer.num": req.body.num }, {
+                    $set: {
+                        "drawer.$.favorite": req.body.favorite,
+                        "drawer.$.count": req.body.count,
+                        "drawer.$.partial": req.body.partial
+                    }
+                });
+                await caboodle.save();
+                res.json(update);
+            } catch (error) {
+                console.error(error.message);
+                res.status(500).send("Server Error");
+            }
         }
     } catch (error) {
         console.error(error.message);
@@ -124,7 +142,7 @@ router.put("/owned", auth, async (req, res) => {
         } else {
             try {
                 console.log(req.body);
-                const update = await Caboodle.updateOne({ user: req.user.id, "drawer.num": req.body.num }, {
+                const update = await Caboodle.findOneAndUpdate({ user: req.user.id, "drawer.num": req.body.num }, {
                     $set: {
                         "drawer.$.favorite": req.body.favorite,
                         "drawer.$.count": req.body.count,

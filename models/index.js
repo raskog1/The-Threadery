@@ -1,5 +1,6 @@
 module.exports = {
     User: require("./User"),
     DMC: require("./DMC"),
-    Caboodle: require("./Caboodle")
+    Caboodle: require("./Caboodle"),
+    Thread: require("./Thread")
 };

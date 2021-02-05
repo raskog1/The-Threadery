@@ -5,10 +5,11 @@ function Entry() {
     const [threadInfo, setThreadInfo] = useState({
         num: "",
         name: "",
-        color: ""
+        color: "",
+        note: ""
     })
 
-    const { num, name, color } = threadInfo;
+    const { num, name, color, note } = threadInfo;
 
     const onChange = (e) =>
         setThreadInfo({ ...threadInfo, [e.target.name]: e.target.value });
@@ -18,7 +19,8 @@ function Entry() {
         const thread = {
             num,
             name,
-            color
+            color,
+            note
         };
 
         try {
@@ -46,6 +48,7 @@ function Entry() {
             num: "",
             name: "",
             color: "",
+            note: ""
         });
     };
 
@@ -77,6 +80,14 @@ function Entry() {
                         placeholder="Color"
                         name="color"
                         value={color}
+                        onChange={(e) => onChange(e)}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Note: </label>
+                    <input
+                        name="note"
+                        value={note}
                         onChange={(e) => onChange(e)}
                     />
                 </div>

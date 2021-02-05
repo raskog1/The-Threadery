@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const ThreadSChema = new mongoose.Schema(
+const ThreadSchema = new mongoose.Schema(
     {
         num: {
             type: String,
@@ -27,8 +27,12 @@ const ThreadSChema = new mongoose.Schema(
         favorite: {
             type: Boolean,
             default: false
+        },
+        brand: {
+            type: String,
+            require: true
         }
     }
 );
 
-module.exports = Thread = mongoose.model("thread", ThreadSChema);
+module.exports = Thread = mongoose.model("thread", ThreadSchema);

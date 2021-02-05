@@ -116,16 +116,15 @@ function Thread(props) {
                 const query = document.location.search;
                 const colorId = query.split("=")[1];
 
-                // console.log("colorId", colorId);
-
                 if (colorId) { //try to get from owned/fav first, if doesn't exist, get from masterfile  
-                    const currentFavorite = await API.getOne(colorId);
-                    console.log(currentFavorite);
-                    if (currentFavorite.data) {
-                        const { num, name, color } = currentFavorite.data;
+                    const currentThread = await API.getOne(colorId);
+                    console.log(currentThread);
+                    if (currentThread.data) {
+                        const { num, name, color, count, partial, favorite } = currentThread.data;
                         setColor({ num, name, color });
-                        setFavorite(true);
-                        return;
+                        setFavorite(favorite);
+                        setPartial(partial);
+                        setCount(count);
                     }
                 }
             } catch (error) {
@@ -136,18 +135,16 @@ function Thread(props) {
     }, []);
 
     useEffect(() => {
-        if (count > 0) {
-            const newThread = {
-                num: color.num,
-                name: color.name,
-                color: color.color,
-                partial: partial,
-                count: count,
-                favorite: favorite
-            };
-            API.addOwned(newThread);
+        if (count > 0 || partial > 0) {
+            API.addOne(setModel());
+        } else {
+            API.deleteOne(color.num)
         }
-    }, [count])
+    }, [count, partial])
+
+    useEffect(() => {
+        API.addOwned(setModel());
+    }, [favorite])
 
     const classes = useStyles();
 
@@ -157,28 +154,27 @@ function Thread(props) {
         if (favorite) {
             return <StarIcon
                 className={classes.favStar}
-                onClick={() => {
-                    setFavorite(!favorite);
-                    API.deleteOne(color.num);
-                }}
+                onClick={() => setFavorite(!favorite)}
             />
         } else if (!favorite) {
             return <StarOutlinedIcon
                 className={classes.star}
-                onClick={() => {
-                    const newThread = {
-                        num: color.num,
-                        name: color.name,
-                        color: color.color,
-                        partial: partial,
-                        count: count,
-                        favorite: !favorite
-                    };
-                    API.addOne(newThread);
-                    setFavorite(!favorite);
-                }}
+                onClick={() => setFavorite(!favorite)}
             />
         }
+    }
+
+    const setModel = () => {
+        const newThread = {
+            num: color.num,
+            name: color.name,
+            color: color.color,
+            partial: partial,
+            count: count,
+            favorite: favorite,
+            brand: "DMC"
+        }
+        return newThread;
     }
 
     return (
@@ -202,7 +198,7 @@ function Thread(props) {
                         <PrettoSlider
                             valueLabelDisplay="auto"
                             aria-label="pretto slider"
-                            defaultValue={0}
+                            defaultValue={partial}
                             step={25}
                             onChangeCommitted={(e, val) => onChange(e, val)}
                         />
