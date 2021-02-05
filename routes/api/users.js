@@ -2,9 +2,10 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("config");
+const auth = require("../../config/middleware/auth");
 
+// Models
 const User = require("../../models/User");
-const Caboodle = require("../../models/Caboodle");
 
 // @route   POST api/users
 // @desc    Register user
@@ -70,12 +71,12 @@ router.post("/", async (req, res) => {
     }
 });
 
-// @route   GET api/users/:id
-// @desc    Get a user by id
+// @route   GET api/users
+// @desc    Get current user
 // @access  Public
-router.get("/:id", async (req, res) => {
+router.get("/", auth, async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.user.id);
         res.json(user);
     } catch (error) {
         console.error(error.message);

@@ -43,7 +43,9 @@ function Login() {
 
             // setUser MUST fire before setAuth to get desired info on login
             await setUser({
-                username: res.data.user.username,
+                first: res.data.user.first,
+                // last: res.data.user.last,
+                // email: res.data.user.email
             });
 
             setAuth({

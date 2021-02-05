@@ -8,25 +8,26 @@ const config = {
 
 export default {
     // Login/User Methods
-    getUser: function (id) {
-        return axios.get("/api/users/" + id);
+    getUser: function () {
+        return axios.get("/api/users");
+    },
+
+    // Basic Thread Methods
+    getOne: function (id) {
+        return axios.get("/api/caboodle/drawer/" + id);
+    },
+
+    addOne: function (thread) {
+        return axios.put("/api/caboodle/drawer", thread);
+    },
+
+    deleteOne: function (id) {
+        return axios.delete("/api/caboodle/drawer/" + id);
     },
 
     // Favorites Methods
     getFavorites: function () {
         return axios.get("/api/caboodle/fav");
-    },
-
-    getOneFavorite: function (id) {
-        return axios.get("/api/caboodle/fav/" + id);
-    },
-
-    addFav: function (thread) {
-        return axios.put("/api/caboodle/fav", thread);
-    },
-
-    deleteFav: function (id) {
-        return axios.delete("/api/caboodle/fav/" + id);
     },
 
     // Owned Methods

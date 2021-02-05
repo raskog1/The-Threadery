@@ -107,7 +107,7 @@ function Thread(props) {
         color: tColor.color
     });
     const [count, setCount] = useState(0);
-    const [partial, setPartial] = useState(0);
+    const [partial, setPartial] = useState(0.0);
     const [favorite, setFavorite] = useState(false);
 
     useEffect(() => {
@@ -119,7 +119,7 @@ function Thread(props) {
                 // console.log("colorId", colorId);
 
                 if (colorId) { //try to get from owned/fav first, if doesn't exist, get from masterfile  
-                    const currentFavorite = await API.getOneFavorite(colorId);
+                    const currentFavorite = await API.getOne(colorId);
                     console.log(currentFavorite);
                     if (currentFavorite.data) {
                         const { num, name, color } = currentFavorite.data;
@@ -142,7 +142,8 @@ function Thread(props) {
                 name: color.name,
                 color: color.color,
                 partial: partial,
-                count: count
+                count: count,
+                favorite: favorite
             };
             API.addOwned(newThread);
         }
@@ -158,15 +159,23 @@ function Thread(props) {
                 className={classes.favStar}
                 onClick={() => {
                     setFavorite(!favorite);
-                    API.deleteFav(color.num);
+                    API.deleteOne(color.num);
                 }}
             />
         } else if (!favorite) {
             return <StarOutlinedIcon
                 className={classes.star}
                 onClick={() => {
-                    setFavorite(!favorite)
-                    API.addFav(color);
+                    const newThread = {
+                        num: color.num,
+                        name: color.name,
+                        color: color.color,
+                        partial: partial,
+                        count: count,
+                        favorite: !favorite
+                    };
+                    API.addOne(newThread);
+                    setFavorite(!favorite);
                 }}
             />
         }

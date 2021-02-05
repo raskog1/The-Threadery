@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -6,6 +6,7 @@ import { Container, Fab } from "@material-ui/core";
 
 // Utilities and Context
 import UserContext from "../utils/UserContext";
+import API from "../utils/API";
 
 // Components
 
@@ -42,13 +43,14 @@ const useStyles = makeStyles({
 })
 
 function Landing() {
+    const { user, setUser } = useContext(UserContext);
+
     const classes = useStyles();
-    const user = useContext(UserContext);
 
     return (
         <>
             <Container className={classes.root}>
-                <h2 className={classes.handwriting}>Good morning {user.user.first},</h2>
+                <h2 className={classes.handwriting}>Good morning {user.first},</h2>
                 <h3 className={classes.handwriting}>You've got brains in your head, you've got feet in your shoes.  You can steer yourself any way you choose.</h3>
             </Container>
             <Container className={classes.btnContainer}>

@@ -3,7 +3,7 @@ const router = require("express").Router();
 const auth = require("../../config/middleware/auth");
 
 const Caboodle = require("../../models/Caboodle");
-const User = require("../../models/User");
+const Thread = require("../../models/Thread");
 
 // @router  POST api/caboodle
 // @desc    Create a caboodle
@@ -25,79 +25,89 @@ router.post("/", auth, async (req, res) => {
 router.get("/fav", auth, async (req, res) => {
     try {
         const caboodle = await Caboodle.findOne({ user: req.user.id });
-        res.json(caboodle.favorites);
+        const match = caboodle.drawer.filter(thread => thread.favorite === true);
+        res.json(match);
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Server Error");
     }
 })
-
-// @router  GET api/caboodle/fav/:id
-// @desc    Get one favorite
-// @access  Private
-router.get("/fav/:id", auth, async (req, res) => {
-    try {
-        const caboodle = await Caboodle.findOne({ user: req.user.id });
-        const match = caboodle.favorites.findIndex(color => color.num === req.params.id);
-        if (match >= 0) {
-            res.json(caboodle.favorites[match]);
-        } else { res.json() }
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Server Error");
-    }
-})
-
-// @router  PUT api/caboodle/fav
-// @desc    Add a thread to favorites
-// @access  Private
-router.put("/fav", auth, async (req, res) => {
-    try {
-        const caboodle = await Caboodle.findOne({ user: req.user.id });
-        const match = caboodle.favorites.findIndex(color => color.num === req.body.num);
-        if (match < 0) {
-            caboodle.favorites.push(req.body);
-            await caboodle.save();
-            res.json(caboodle);
-        }
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Server Error");
-    }
-})
-
-
-// @router  DELETE api/caboodle/fav/:id
-// @desc    Delete a thread from favorites
-// @access  Private
-router.delete("/fav/:id", auth, async (req, res) => {
-    try {
-        const caboodle = await Caboodle.findOne({ user: req.user.id });
-        const match = caboodle.favorites.findIndex(color => color.num === req.params.id);
-        if (match >= 0) {
-            caboodle.favorites.splice(match, 1);
-            await caboodle.save();
-            res.json(caboodle);
-        }
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Server Error");
-    }
-})
-
 
 // @router  GET api/caboodle/owned
 // @desc    Get all owned
 // @access  Private
-router.get("/owned", auth, async (req, res) => {
+router.get("/owned", auth, async (req, res) => { // Working for count, but partials not able to edit
     try {
         const caboodle = await Caboodle.findOne({ user: req.user.id });
-        res.json(caboodle.owned);
+        const match = caboodle.drawer.filter(thread => thread.count > 0 || thread.partial > 0)
+        res.json(match);
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Server Error");
     }
 })
+
+// @router  GET api/caboodle/drawer/:id
+// @desc    Get one thread
+// @access  Private
+router.get("/drawer/:id", auth, async (req, res) => {
+    try {
+        const caboodle = await Caboodle.findOne({ user: req.user.id });
+        const match = caboodle.drawer.findIndex(thread => thread.num === req.params.id);
+        if (match >= 0) {
+            res.json(caboodle.drawer[match]);
+        } else {
+            res.status(404).send("Thread not found");
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Server Error");
+    }
+})
+
+// @router  PUT api/caboodle/drawer
+// @desc    Add a thread to drawer
+// @access  Private
+router.put("/drawer", auth, async (req, res) => {
+    try {
+        const caboodle = await Caboodle.findOne({ user: req.user.id });
+        const match = caboodle.drawer.findIndex(thread => thread.num === req.body.num);
+        if (match < 0) {
+            const thread = new Thread(req.body);
+            caboodle.drawer.push(thread);
+            await caboodle.save();
+            res.json(thread);
+        } else {
+            res.status(404).send("Unable to save thread"); // Don't want to send error?
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Server Error");
+    }
+})
+
+
+// @router  DELETE api/caboodle/drawer/:id
+// @desc    Delete a thread from drawer
+// @access  Private
+router.delete("/drawer/:id", auth, async (req, res) => {
+    try {
+        const caboodle = await Caboodle.findOne({ user: req.user.id });
+        const match = caboodle.drawer.findIndex(color => color.num === req.params.id);
+        if (match >= 0) {
+            const deleted = caboodle.drawer[match];
+            caboodle.drawer.splice(match, 1);
+            await caboodle.save();
+            res.json(deleted);
+        } else {
+            res.status(404).send("Thread did not exist in favorites");
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Server Error");
+    }
+})
+
 
 // @router  PUT api/caboodle/owned
 // @desc    Add or change a thread to owned
@@ -106,18 +116,19 @@ router.put("/owned", auth, async (req, res) => {
     // This can probably be simplified using 'upsert' as a future task
     try {
         const caboodle = await Caboodle.findOne({ user: req.user.id });
-        const match = caboodle.owned.findIndex(color => color.num === req.body.num);
+        const match = caboodle.drawer.findIndex(color => color.num === req.body.num);
         if (match < 0) {
-            caboodle.owned.push(req.body);
+            caboodle.drawer.push(req.body);
             await caboodle.save();
             res.json(caboodle);
         } else {
             try {
                 console.log(req.body);
-                const update = await Caboodle.updateOne({ user: req.user.id, "owned.num": req.body.num }, {
+                const update = await Caboodle.updateOne({ user: req.user.id, "drawer.num": req.body.num }, {
                     $set: {
-                        "owned.$.count": req.body.count,
-                        "owned.$.partial": req.body.partial
+                        "drawer.$.favorite": req.body.favorite,
+                        "drawer.$.count": req.body.count,
+                        "drawer.$.partial": req.body.partial
                     }
                 });
                 await caboodle.save();

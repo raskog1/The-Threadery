@@ -5,10 +5,7 @@ const CaboodleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
     },
-    owned: {
-        type: [Object]
-    },
-    favorites: {
+    drawer: {
         type: [Object]
     },
     wishlist: {
