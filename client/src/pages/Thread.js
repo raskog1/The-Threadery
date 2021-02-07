@@ -118,7 +118,6 @@ function Thread(props) {
 
                 if (colorId) { //try to get from owned/fav first, if doesn't exist, get from masterfile  
                     const currentThread = await API.getOne(colorId);
-                    console.log(currentThread);
                     if (currentThread.data) {
                         const { num, name, color, count, partial, favorite } = currentThread.data;
                         setColor({ num, name, color });
@@ -196,6 +195,7 @@ function Thread(props) {
                     <Box>
                         <Typography component="p">Partial Quantity</Typography>
                         <PrettoSlider
+                            value={partial}
                             valueLabelDisplay="auto"
                             aria-label="pretto slider"
                             defaultValue={partial}

@@ -3,9 +3,11 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import axios from "axios";
 
 // Utilities and createContext
+import API from "./utils/API";
 import setAuthToken from "./utils/setAuthToken";
 import UserContext from "./utils/UserContext";
 import AuthContext from "./utils/AuthContext";
+import ThreadContext from "./utils/ThreadContext";
 import './App.css';
 
 // Pages
@@ -35,6 +37,10 @@ function App() {
     role: null,
   });
 
+  const [threads, setThreads] = useState({
+    dmc: []
+  })
+
   useEffect(() => {
     if (localStorage.token) {
       setAuthToken(localStorage.token);
@@ -46,10 +52,21 @@ function App() {
       });
     }
 
+    // Set up user context
     try {
       axios.get("/api/auth").then((res) => {
         setUserState(res.data);
       });
+    } catch (error) {
+      console.error(error.response.data);
+    }
+
+    // Set all universal thread inventories context
+    try {
+      API.getAllDMC()
+        .then((res) => {
+          setThreads({ dmc: res.data });
+        })
     } catch (error) {
       console.error(error.response.data);
     }
@@ -62,11 +79,13 @@ function App() {
           <Switch>
             <Route exact path="/" component={Login} />
             <Route exact path="/home" component={Landing} />
-            <Route exact path="/inventory" component={Inventory} />
-            <Route exact path="/projects" component={Projects} />
-            <Route exact path="/wishlist" component={Wishlist} />
-            <Route path="/thread" component={Thread} />
-            <Route exact path="/entry" component={Entry} />
+            <ThreadContext.Provider value={{ threads: threads, setThreads: setThreads }}>
+              <Route exact path="/inventory" component={Inventory} />
+              <Route exact path="/projects" component={Projects} />
+              <Route exact path="/wishlist" component={Wishlist} />
+              <Route path="/thread" component={Thread} />
+              <Route exact path="/entry" component={Entry} />
+            </ThreadContext.Provider>
           </Switch>
         </AuthContext.Provider>
       </UserContext.Provider>

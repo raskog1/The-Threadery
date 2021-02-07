@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -6,7 +7,6 @@ import { Container, Fab } from "@material-ui/core";
 
 // Utilities and Context
 import UserContext from "../utils/UserContext";
-import API from "../utils/API";
 
 // Components
 
@@ -43,7 +43,7 @@ const useStyles = makeStyles({
 })
 
 function Landing() {
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const classes = useStyles();
 
@@ -54,15 +54,15 @@ function Landing() {
                 <h3 className={classes.handwriting}>You've got brains in your head, you've got feet in your shoes.  You can steer yourself any way you choose.</h3>
             </Container>
             <Container className={classes.btnContainer}>
-                <a href="/inventory" className={classes.sansUnderline}>
+                <Link to="/inventory" className={classes.sansUnderline}>
                     <Fab variant="extended" className={classes.buttons} aria-label="add">Inventory</Fab>
-                </a>
-                <a href="/wishlist" className={classes.sansUnderline}>
+                </Link>
+                <Link to="/wishlist" className={classes.sansUnderline}>
                     <Fab variant="extended" className={classes.buttons} aria-label="add">Wishlist</Fab>
-                </a>
-                <a href="/projects" className={classes.sansUnderline}>
+                </Link>
+                <Link to="/projects" className={classes.sansUnderline}>
                     <Fab variant="extended" className={classes.buttons} aria-label="add">Projects</Fab>
-                </a>
+                </Link>
             </Container>
         </>
     )

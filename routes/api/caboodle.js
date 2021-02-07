@@ -35,7 +35,7 @@ router.get("/fav", auth, async (req, res) => {
 // @router  GET api/caboodle/owned
 // @desc    Get all owned
 // @access  Private
-router.get("/owned", auth, async (req, res) => { // Working for count, but partials not able to edit
+router.get("/owned", auth, async (req, res) => {
     try {
         const caboodle = await Caboodle.findOne({ user: req.user.id });
         const match = caboodle.drawer.filter(thread => thread.count > 0 || thread.partial > 0)
@@ -70,7 +70,7 @@ router.get("/drawer/:id", auth, async (req, res) => {
 router.put("/drawer", auth, async (req, res) => {
     try {
         const caboodle = await Caboodle.findOne({ user: req.user.id });
-        const match = caboodle.drawer.findIndex(thread => thread.num === req.body.num);
+        const match = caboodle.drawer.findIndex(thread => thread.num == req.body.num);
         if (match < 0) {
             const thread = req.body;
             try {
@@ -141,7 +141,6 @@ router.put("/owned", auth, async (req, res) => {
             res.json(caboodle);
         } else {
             try {
-                console.log(req.body);
                 const update = await Caboodle.findOneAndUpdate({ user: req.user.id, "drawer.num": req.body.num }, {
                     $set: {
                         "drawer.$.favorite": req.body.favorite,

@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import API from "../utils/API";
 
 // Material UI
-import { makeStyles } from '@material-ui/core/styles';
+//import { makeStyles } from '@material-ui/core/styles';
+
+// Utilities and Contextimport 
+import ThreadContext from "../utils/ThreadContext";
 
 // Components
 import BackBtn from "../components/BackBtn";
@@ -11,8 +14,9 @@ import Results from "../components/Results";
 import TabBar from "../components/TabBar";
 
 function Inventory() {
+    const { threads } = useContext(ThreadContext);
+
     const [input, setInput] = useState("");
-    const [allThreads, setAllThreads] = useState({ threads: [], isFetching: false })
     const [favThreads, setFavThreads] = useState([]);
     const [ownedThreads, setOwnedThreads] = useState([]);
     const [active, setActive] = useState({ all: true, fav: false, owned: false });
@@ -20,16 +24,12 @@ function Inventory() {
     useEffect(() => {
         const getThreads = async () => {
             try {
-                setAllThreads({ ...allThreads, isFetching: true })
-                const allResponse = await API.getAllDMC();
-                setAllThreads({ threads: allResponse.data, isFetching: false })
                 const favResponse = await API.getFavorites();
                 setFavThreads(favResponse.data);
                 const ownResponse = await API.getOwned();
                 setOwnedThreads(ownResponse.data);
             } catch (error) {
                 console.log(error);
-                setAllThreads({ ...allThreads, isFetching: false })
             }
         };
         getThreads();
@@ -48,12 +48,13 @@ function Inventory() {
     }
 
     const getActive = () => {
+
         if (active.owned) {
             return ownedThreads;
         } else if (active.fav) {
             return favThreads;
         } else {
-            return allThreads.threads;
+            return threads.dmc;
         }
     }
 

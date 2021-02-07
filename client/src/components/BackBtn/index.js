@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,11 +18,11 @@ function BackBtn() {
     const classes = useStyles();
 
     return (
-        <a href="/inventory">
+        <Link to="/inventory">
             <Fab color="secondary" aria-label="add" className={classes.margin}>
                 <BackspaceIcon />
             </Fab>
-        </a>
+        </Link>
     )
 }
 

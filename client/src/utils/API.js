@@ -8,19 +8,25 @@ const config = {
 
 export default {
     // Login/User Methods
-    getUser: function () {
-        return axios.get("/api/users");
+    loginUser: function (info) {
+        return axios.post("/api/auth", info);
+    },
+    createUser: function (info) {
+        return axios.post("/api/users", info);
+    },
+
+    // Caboodle Methods
+    createCaboodle: function () {
+        return axios.post("/api/caboodle");
     },
 
     // Basic Thread Methods
     getOne: function (id) {
         return axios.get("/api/caboodle/drawer/" + id);
     },
-
     addOne: function (thread) {
         return axios.put("/api/caboodle/drawer", thread);
     },
-
     deleteOne: function (id) {
         return axios.delete("/api/caboodle/drawer/" + id);
     },
@@ -34,7 +40,6 @@ export default {
     getOwned: function () {
         return axios.get("/api/caboodle/owned");
     },
-
     addOwned: function (thread) {
         return axios.put("/api/caboodle/owned", thread);
     },
@@ -43,11 +48,9 @@ export default {
     addDMC: function (thread) {
         return axios.post("/api/threads/DMC", thread, config);
     },
-
     getAllDMC: function () {
         return axios.get("/api/threads/DMC");
     },
-
     getOneDMC: function (id) {
         return axios.get("/api/threads/DMC/" + id);
     }
