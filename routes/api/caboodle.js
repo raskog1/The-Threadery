@@ -3,6 +3,7 @@ const router = require("express").Router();
 const auth = require("../../config/middleware/auth");
 
 const Caboodle = require("../../models/Caboodle");
+const Thread = require("../../models/Thread");
 
 // @router  POST api/caboodle
 // @desc    Create a caboodle
@@ -126,41 +127,32 @@ router.delete("/drawer/:id", auth, async (req, res) => {
     }
 })
 
-
-// @router  PUT api/caboodle/owned
-// @desc    Add or change a thread to owned
+// @router  PUT api/caboodle/wishlist
+// @desc    Add a thread to wishlist
 // @access  Private
-router.put("/owned", auth, async (req, res) => {
-    // This can probably be simplified using 'upsert' as a future task
+router.put("/wishlist", auth, async (req, res) => {
     try {
-        const caboodle = await Caboodle.findOne({ user: req.user.id });
-        const match = caboodle.drawer.findIndex(color => color.num === req.body.num);
-        if (match < 0) {
-            caboodle.drawer.push(req.body);
-            await caboodle.save();
-            res.json(caboodle);
+        let caboodle = await Caboodle.findOne({ user: req.user.id });
+
+        if (caboodle.wishlist.length > 0) {
+            caboodle = await Caboodle.findOneAndUpdate({
+                user: req.user.id, "wishlist.num": req.body.num
+            }, {
+                "wishlist.$": req.body
+            }, {
+                upsert: true,
+                new: true
+            });
         } else {
-            try {
-                const update = await Caboodle.findOneAndUpdate({ user: req.user.id, "drawer.num": req.body.num }, {
-                    $set: {
-                        "drawer.$.favorite": req.body.favorite,
-                        "drawer.$.count": req.body.count,
-                        "drawer.$.partial": req.body.partial
-                    }
-                });
-                await caboodle.save();
-                res.json(update);
-            } catch (error) {
-                console.error(error.message);
-                res.status(500).send("Server Error");
-            }
+            const thread = new Thread(req.body);
+            caboodle.wishlist.push(thread)
         }
+        await caboodle.save();
+        res.json(caboodle);
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Server Error");
     }
 })
-
-
 
 module.exports = router;

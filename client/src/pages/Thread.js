@@ -107,7 +107,7 @@ function Thread(props) {
         color: tColor.color
     });
     const [count, setCount] = useState(0);
-    const [partial, setPartial] = useState(0.0);
+    const [partial, setPartial] = useState(0);
     const [favorite, setFavorite] = useState(false);
 
     useEffect(() => {
@@ -116,7 +116,7 @@ function Thread(props) {
                 const query = document.location.search;
                 const colorId = query.split("=")[1];
 
-                if (colorId) { //try to get from owned/fav first, if doesn't exist, get from masterfile  
+                if (colorId) {
                     const currentThread = await API.getOne(colorId);
                     if (currentThread.data) {
                         const { num, name, color, count, partial, favorite } = currentThread.data;
@@ -135,14 +135,14 @@ function Thread(props) {
 
     useEffect(() => {
         if (count > 0 || partial > 0) {
-            API.addOne(setModel());
+            API.addOne(setModel()); //Getting called twice on page load
         } else {
             API.deleteOne(color.num)
         }
     }, [count, partial])
 
     useEffect(() => {
-        API.addOwned(setModel());
+        API.addOwned(setModel()); //Getting called twice on page load
     }, [favorite])
 
     const classes = useStyles();
@@ -163,6 +163,7 @@ function Thread(props) {
         }
     }
 
+    // Constructs object for storage in database
     const setModel = () => {
         const newThread = {
             num: color.num,
