@@ -26,6 +26,26 @@ router.get("/fav", auth, async (req, res) => {
     try {
         const caboodle = await Caboodle.findOne({ user: req.user.id });
         const match = caboodle.drawer.filter(thread => thread.favorite === true);
+        match.sort(function (a, b) {
+            return a.num - b.num;
+        });
+        res.json(match);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Server Error");
+    }
+})
+
+// @router  GET api/caboodle/wishlist
+// @desc    Get all wishes
+// @access  Private
+router.get("/wishlist", auth, async (req, res) => {
+    try {
+        const caboodle = await Caboodle.findOne({ user: req.user.id });
+        const match = caboodle.drawer.filter(thread => thread.wishlist === true);
+        match.sort(function (a, b) {
+            return a.num - b.num;
+        });
         res.json(match);
     } catch (error) {
         console.error(error.message);
@@ -68,42 +88,42 @@ router.get("/drawer/:id", auth, async (req, res) => {
 // @router  PUT api/caboodle/drawer
 // @desc    Add a thread to drawer
 // @access  Private
-router.put("/drawer", auth, async (req, res) => {
-    try {
-        const caboodle = await Caboodle.findOne({ user: req.user.id });
-        const match = caboodle.drawer.findIndex(thread => thread.num == req.body.num);
-        if (match < 0) {
-            const thread = req.body;
-            try {
-                caboodle.drawer.push(thread);
-                await caboodle.save();
-                res.json(thread);
-            } catch (error) {
-                console.error(error.message);
-                res.status(500).send("Server Error");
-            }
+// router.put("/drawer", auth, async (req, res) => {
+//     try {
+//         const caboodle = await Caboodle.findOne({ user: req.user.id });
+//         const match = caboodle.drawer.findIndex(thread => thread.num == req.body.num);
+//         if (match < 0) {
+//             const thread = req.body;
+//             try {
+//                 caboodle.drawer.push(thread);
+//                 await caboodle.save();
+//                 res.json(thread);
+//             } catch (error) {
+//                 console.error(error.message);
+//                 res.status(500).send("Server Error");
+//             }
 
-        } else {
-            try {
-                const update = await Caboodle.findOneAndUpdate({ user: req.user.id, "drawer.num": req.body.num }, {
-                    $set: {
-                        "drawer.$.favorite": req.body.favorite,
-                        "drawer.$.count": req.body.count,
-                        "drawer.$.partial": req.body.partial
-                    }
-                });
-                await caboodle.save();
-                res.json(update);
-            } catch (error) {
-                console.error(error.message);
-                res.status(500).send("Server Error");
-            }
-        }
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Server Error");
-    }
-})
+//         } else {
+//             try {
+//                 const update = await Caboodle.findOneAndUpdate({ user: req.user.id, "drawer.num": req.body.num }, {
+//                     $set: {
+//                         "drawer.$.favorite": req.body.favorite,
+//                         "drawer.$.count": req.body.count,
+//                         "drawer.$.partial": req.body.partial
+//                     }
+//                 });
+//                 await caboodle.save();
+//                 res.json(update);
+//             } catch (error) {
+//                 console.error(error.message);
+//                 res.status(500).send("Server Error");
+//             }
+//         }
+//     } catch (error) {
+//         console.error(error.message);
+//         res.status(500).send("Server Error");
+//     }
+// })
 
 
 // @router  DELETE api/caboodle/drawer/:id
@@ -127,28 +147,48 @@ router.delete("/drawer/:id", auth, async (req, res) => {
     }
 })
 
-// @router  PUT api/caboodle/wishlist
-// @desc    Add a thread to wishlist
+// @router  PUT api/caboodle/drawer
+// @desc    Add or update a thread to drawer
 // @access  Private
-router.put("/wishlist", auth, async (req, res) => {
+router.put("/drawer", auth, async (req, res) => {
     try {
         let caboodle = await Caboodle.findOne({ user: req.user.id });
-
-        if (caboodle.wishlist.length > 0) {
+        const match = caboodle.drawer.findIndex(color => color.num === req.body.num);
+        if (match >= 0) {
             caboodle = await Caboodle.findOneAndUpdate({
-                user: req.user.id, "wishlist.num": req.body.num
+                user: req.user.id, "drawer.num": req.body.num
             }, {
-                "wishlist.$": req.body
+                "drawer.$": req.body
             }, {
-                upsert: true,
                 new: true
             });
         } else {
             const thread = new Thread(req.body);
-            caboodle.wishlist.push(thread)
+            caboodle.drawer.push(thread)
         }
         await caboodle.save();
         res.json(caboodle);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Server Error");
+    }
+})
+
+// @router  DELETE api/caboodle/wishlist/:id
+// @desc    Delete a thread from wishlist
+// @access  Private
+router.delete("/wishlist/:id", auth, async (req, res) => {
+    try {
+        const caboodle = await Caboodle.findOne({ user: req.user.id });
+        const match = caboodle.wishlist.findIndex(color => color.num === req.params.id);
+        if (match >= 0) {
+            const deleted = caboodle.wishlist[match];
+            caboodle.wishlist.splice(match, 1);
+            await caboodle.save();
+            res.json(deleted);
+        } else {
+            res.status(404).send("Thread did not exist in wishlist");
+        }
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Server Error");

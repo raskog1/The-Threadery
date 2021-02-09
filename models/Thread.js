@@ -28,6 +28,14 @@ const ThreadSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
+        wishlist: {
+            type: Boolean,
+            default: false
+        },
+        wishCount: {
+            type: Number,
+            default: 0
+        },
         brand: {
             type: String,
             require: true

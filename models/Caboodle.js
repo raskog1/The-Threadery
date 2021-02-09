@@ -28,6 +28,14 @@ const ThreadSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
+        wishlist: {
+            type: Boolean,
+            default: false
+        },
+        wishCount: {
+            type: Number,
+            default: 0
+        },
         brand: {
             type: String,
             required: true
@@ -43,9 +51,9 @@ const CaboodleSchema = new mongoose.Schema({
     drawer: {
         type: [ThreadSchema]
     },
-    wishlist: {
-        type: [ThreadSchema]
-    },
+    // wishlist: {
+    //     type: [ThreadSchema]
+    // },
     projects: {
         type: [Object]
     }

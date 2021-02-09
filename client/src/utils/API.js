@@ -40,9 +40,19 @@ export default {
     getOwned: function () {
         return axios.get("/api/caboodle/owned");
     },
-    addOwned: function (thread) {
-        return axios.put("/api/caboodle/owned", thread);
+
+    // Wishlist Methods
+    getWishes: function () {
+        return axios.get("/api/caboodle/wishlist");
     },
+    // addOwned: function (thread) {
+    //     return axios.put("/api/caboodle/drawer", thread);
+    // },
+
+    // Wishlist Methods
+    // addWish: function (thread) {
+    //     return axios.put("/api/caboodle/wishlist", thread);
+    // },
 
     // Thread Inventory Methods
     addDMC: function (thread) {

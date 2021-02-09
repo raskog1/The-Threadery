@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import API from "../utils/API";
 
 // Material UI
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { Card, CardActions, CardContent } from '@material-ui/core';
+import { Card, CardActions, CardContent, Slide, Snackbar } from '@material-ui/core';
 import { Box, Button, IconButton, Slider } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 
 // Icons
 import AddIcon from '@material-ui/icons/Add';
@@ -104,11 +105,18 @@ function Thread(props) {
     const [color, setColor] = useState({
         num: tColor.num,
         name: tColor.name,
-        color: tColor.color
+        color: tColor.color,
+        count: 0,
+        partial: 0,
+        note: "",
+        favorite: false,
+        wishlist: false,
+        wishCount: 0
     });
-    const [count, setCount] = useState(0);
-    const [partial, setPartial] = useState(0);
-    const [favorite, setFavorite] = useState(false);
+    const [open, setOpen] = useState(false);
+
+    // Prevent [count, partial] useEffect on initial mount
+    const isInitialMount = useRef(true);
 
     useEffect(() => {
         const getColor = async () => {
@@ -119,11 +127,10 @@ function Thread(props) {
                 if (colorId) {
                     const currentThread = await API.getOne(colorId);
                     if (currentThread.data) {
-                        const { num, name, color, count, partial, favorite } = currentThread.data;
-                        setColor({ num, name, color });
-                        setFavorite(favorite);
-                        setPartial(partial);
-                        setCount(count);
+                        const { num, name, color, count, partial, note, favorite, wishlist, wishCount } = currentThread.data;
+                        setColor({ num, name, color, count, partial, note, favorite, wishlist, wishCount });
+                        // setPartial(partial);
+                        // setCount(count);
                     }
                 }
             } catch (error) {
@@ -134,34 +141,54 @@ function Thread(props) {
     }, []);
 
     useEffect(() => {
-        if (count > 0 || partial > 0) {
-            API.addOne(setModel()); //Getting called twice on page load
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
         } else {
-            API.deleteOne(color.num)
+            if (color.count > 0 || color.partial > 0) {
+                API.addOne(setModel());
+            } else {
+                API.deleteOne(color.num);
+            }
         }
-    }, [count, partial])
-
-    useEffect(() => {
-        API.addOwned(setModel()); //Getting called twice on page load
-    }, [favorite])
+    }, [color.count, color.partial, color.wishlist])
 
     const classes = useStyles();
 
-    const onChange = (e, val) => setPartial(val);
+    const onChange = (e, val) => setColor({ ...color, partial: val });
 
+    // Returns empty or filled star based on favorite value
     const checkFav = () => {
-        if (favorite) {
+        // Have to manually set favorite since setColor does not execute in time
+        if (color.favorite) {
             return <StarIcon
                 className={classes.favStar}
-                onClick={() => setFavorite(!favorite)}
+                onClick={async () => {
+                    let favThread = setModel();
+                    favThread = ({ ...favThread, favorite: false })
+                    setColor({ ...color, favorite: !color.favorite });
+                    API.addOne(favThread);
+                }}
             />
-        } else if (!favorite) {
+        } else if (!color.favorite) {
             return <StarOutlinedIcon
                 className={classes.star}
-                onClick={() => setFavorite(!favorite)}
+                onClick={async () => {
+                    let favThread = setModel();
+                    favThread = ({ ...favThread, favorite: true })
+                    setColor({ ...color, favorite: !color.favorite });
+                    API.addOne(favThread);
+                }}
             />
         }
     }
+
+    // Handle "clickaway" event for Snackbar
+    const handleClose = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpen(false);
+    };
 
     // Constructs object for storage in database
     const setModel = () => {
@@ -169,13 +196,16 @@ function Thread(props) {
             num: color.num,
             name: color.name,
             color: color.color,
-            partial: partial,
-            count: count,
-            favorite: favorite,
+            partial: color.partial,
+            count: color.count,
+            note: color.note,
+            favorite: color.favorite,
+            wishlist: color.wishlist,
+            wishCount: color.wishCount,
             brand: "DMC"
         }
         return newThread;
-    }
+    };
 
     return (
         <>
@@ -196,10 +226,10 @@ function Thread(props) {
                     <Box>
                         <Typography component="p">Partial Quantity</Typography>
                         <PrettoSlider
-                            value={partial}
+                            // value={partial}  This sets the slider on an owned thread, but disables sliding
                             valueLabelDisplay="auto"
                             aria-label="pretto slider"
-                            defaultValue={partial}
+                            defaultValue={color.partial}
                             step={25}
                             onChangeCommitted={(e, val) => onChange(e, val)}
                         />
@@ -207,14 +237,14 @@ function Thread(props) {
                         <Box className={classes.center}>
                             <IconButton
                                 className={classes.counterBtn}
-                                onClick={() => setCount(count + 1)}
+                                onClick={() => setColor({ ...color, count: color.count + 1 })}
                             >
                                 <AddIcon />
                             </IconButton>
-                            <h1 className={classes.counter}>{count}</h1>
+                            <h1 className={classes.counter}>{color.count}</h1>
                             <IconButton
                                 className={classes.counterBtn}
-                                onClick={() => (count > 0) ? setCount(count - 1) : setCount(0)}
+                                onClick={() => (color.count > 0) ? setColor({ ...color, count: color.count - 1 }) : setColor({ ...color, count: 0 })}
                             >
                                 <RemoveIcon />
                             </IconButton>
@@ -223,10 +253,35 @@ function Thread(props) {
 
                 </CardContent>
                 <CardActions>
-                    <Button className={classes.auto} size="small">Add to wishlist</Button>
+                    <Button
+                        className={classes.auto}
+                        size="small"
+                        onClick={() => {
+                            API.addOne({ ...color, wishlist: true });
+                            setOpen(true);
+                        }}
+                        disabled={color.wishlist ? true : false}
+                    >
+                        {color.wishlist ? "Wishlisted" : "Add to Wishlist"}
+                    </Button>
                 </CardActions>
-
             </Card>
+
+            <Snackbar
+                open={open}
+                autoHideDuration={3000}
+                TransitionComponent={Slide}
+                onClose={handleClose}
+            >
+                <MuiAlert
+                    elevation={20}
+                    variant="filled"
+                    onClose={handleClose}
+                    severity="success"
+                >
+                    Added to Wishlist
+                </MuiAlert>
+            </Snackbar>
         </>
     );
 }

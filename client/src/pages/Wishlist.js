@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import API from "../utils/API";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
-import { Container } from "@material-ui/core";
+import { Container, Slide, Snackbar } from "@material-ui/core";
+
 
 // Components
 import BackBtn from "../components/BackBtn";
 import HomeBtn from "../components/HomeBtn";
 import SmThread from "../components/SmThread";
-import TabBar from "../components/TabBar";
 
 const useStyles = makeStyles({
     root: {
@@ -158,9 +159,22 @@ const testProps = [
 ]
 
 function Wishlist() {
-
+    const [wishes, setWishes] = useState([]);
 
     const classes = useStyles();
+
+    useEffect(() => {
+        const getThreads = async () => {
+            try {
+                const wishResponse = await API.getWishes();
+                setWishes(wishResponse.data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        getThreads();
+    }, []);
+
 
     return (
         <>
@@ -168,14 +182,12 @@ function Wishlist() {
             <HomeBtn />
 
             <Container className={classes.threads}>
-                {testProps.map((tColor) => (
+                {wishes.map((tColor) => (
                     <a href="./thread" className={classes.sansUnderline}>
                         <SmThread color={tColor} />
                     </a>
                 ))}
             </Container>
-
-            <TabBar className="fixed-bottom" />
         </>
     )
 }
