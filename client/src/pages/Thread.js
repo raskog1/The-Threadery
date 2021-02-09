@@ -106,18 +106,22 @@ function Thread(props) {
         num: tColor.num,
         name: tColor.name,
         color: tColor.color,
-        count: 0,
-        partial: 0,
-        note: "",
-        favorite: false,
-        wishlist: false,
-        wishCount: 0
+        count: tColor.count || 0,
+        partial: tColor.partial || 0,
+        note: tColor.note || "",
+        favorite: tColor.favorite || false,
+        wishlist: tColor.wishlist || false,
+        wishCount: tColor.wishCount || 0,
+        brand: "DMC"
     });
     const [open, setOpen] = useState(false);
 
-    // Prevent [count, partial] useEffect on initial mount
+    // Prevents [count, partial] useEffect on initial mount
     const isInitialMount = useRef(true);
 
+    // If owned/favorite are clicked from all inventory, it does not populate info without the useEffect...
+
+    // Attemts to grab thread info from user's drawer to populate color hook
     useEffect(() => {
         const getColor = async () => {
             try {
@@ -127,10 +131,7 @@ function Thread(props) {
                 if (colorId) {
                     const currentThread = await API.getOne(colorId);
                     if (currentThread.data) {
-                        const { num, name, color, count, partial, note, favorite, wishlist, wishCount } = currentThread.data;
-                        setColor({ num, name, color, count, partial, note, favorite, wishlist, wishCount });
-                        // setPartial(partial);
-                        // setCount(count);
+                        setColor(currentThread.data)
                     }
                 }
             } catch (error) {
@@ -150,7 +151,7 @@ function Thread(props) {
                 API.deleteOne(color.num);
             }
         }
-    }, [color.count, color.partial, color.wishlist])
+    }, [color.count, color.partial, color.wishlist]) //Wishlist changes should be handled elsewhere
 
     const classes = useStyles();
 
@@ -258,6 +259,7 @@ function Thread(props) {
                         size="small"
                         onClick={() => {
                             API.addOne({ ...color, wishlist: true });
+                            setColor({ ...color, wishlist: !color.wishlist });
                             setOpen(true);
                         }}
                         disabled={color.wishlist ? true : false}

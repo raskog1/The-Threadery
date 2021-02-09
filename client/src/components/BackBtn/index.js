@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,13 +16,17 @@ const useStyles = makeStyles((theme) => ({
 
 function BackBtn() {
     const classes = useStyles();
+    let history = useHistory();
 
     return (
-        <Link to="/inventory">
-            <Fab color="secondary" aria-label="add" className={classes.margin}>
-                <BackspaceIcon />
-            </Fab>
-        </Link>
+        <Fab
+            color="secondary"
+            aria-label="add"
+            className={classes.margin}
+            onClick={() => history.goBack()}
+        >
+            <BackspaceIcon />
+        </Fab>
     )
 }
 

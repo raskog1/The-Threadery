@@ -45,14 +45,6 @@ export default {
     getWishes: function () {
         return axios.get("/api/caboodle/wishlist");
     },
-    // addOwned: function (thread) {
-    //     return axios.put("/api/caboodle/drawer", thread);
-    // },
-
-    // Wishlist Methods
-    // addWish: function (thread) {
-    //     return axios.put("/api/caboodle/wishlist", thread);
-    // },
 
     // Thread Inventory Methods
     addDMC: function (thread) {
