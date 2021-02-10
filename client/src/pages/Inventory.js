@@ -3,14 +3,14 @@ import API from "../utils/API";
 
 // Material UI
 import { makeStyles } from "@material-ui/core/styles";
-import { TextField } from "@material-ui/core"
+import { Fab, TextField } from "@material-ui/core";
 
 // Utilities and Contextimport 
 import ThreadContext from "../utils/ThreadContext";
 
 // Components
 import BackBtn from "../components/BackBtn";
-import SearchBtn from "../components/SearchBtn";
+import SearchBox from "../components/SearchBox";
 import HomeBtn from "../components/HomeBtn";
 import Results from "../components/Results";
 import TabBar from "../components/TabBar";
@@ -19,11 +19,14 @@ const useStyles = makeStyles((theme) => ({
     buttons: {
         display: "flex",
         justifyContent: "space-between",
+        marginBottom: 60
     },
-    popperdiv: {
+    white: {
         backgroundColor: "white",
-        borderRadius: 15,
-        marginTop: 10
+        borderRadius: 4
+    },
+    topM: {
+        marginTop: 7
     }
 }));
 
@@ -34,12 +37,15 @@ function Inventory() {
     const [favThreads, setFavThreads] = useState([]);
     const [ownedThreads, setOwnedThreads] = useState([]);
     const [active, setActive] = useState({ all: true, fav: false, owned: false });
+    const [filtered, setFiltered] = useState([]);
+    const [search, setSearch] = useState();
 
     const classes = useStyles();
 
     useEffect(() => {
         const getThreads = async () => {
             try {
+                //setFiltered(threads.dmc);
                 const favResponse = await API.getFavorites();
                 setFavThreads(favResponse.data);
                 const ownResponse = await API.getOwned();
@@ -51,49 +57,56 @@ function Inventory() {
         getThreads();
     }, []);
 
+    useEffect(() => {
+        const threads = getActive().filter((thread) => {
+            return thread.name.toLowerCase().includes(search);
+        });
+        setFiltered(threads);
+    }, [search]);
+
     const setAll = () => {
-        setActive({ all: true, fav: false, owned: false })
+        setActive({ all: true, fav: false, owned: false });
+        setFiltered([]);
     }
 
     const setFav = () => {
-        setActive({ all: false, fav: true, owned: false })
+        setActive({ all: false, fav: true, owned: false });
+        setFiltered([]);
     }
 
     const setOwned = () => {
-        setActive({ all: false, fav: false, owned: true })
+        setActive({ all: false, fav: false, owned: true });
+        setFiltered([]);
     }
 
     const getActive = () => {
-
-        if (active.owned) {
+        if (active.owned && filtered.length === 0) {
             return ownedThreads;
-        } else if (active.fav) {
+        } else if (active.fav && filtered.length === 0) {
             return favThreads;
-        } else {
+        } else if (active.all && filtered.length === 0) {
             return threads.dmc;
+        } else {
+            return filtered;
         }
     }
 
-    // const handleChange = (event) => {
-    //     setInput(event.target.value);
-    // }
+    // const sortBy = (style) => {
+    //     const threads = getActive();
+    //     const sorted = threads.sort(a, b) => {
 
-    // const handleSubmit = (event) => {
-    //     console.log(input)
     // }
+    //}
+    const handleInputChange = (e) => {
+        setSearch(e.target.value);
+    }
 
     return (
         <>
             <div className={classes.buttons} >
                 <BackBtn />
-                <SearchBtn />
+                <SearchBox handleInputChange={handleInputChange} />
                 <HomeBtn />
-            </div>
-
-            <div className={classes.popperdiv} >
-                <form className={classes.root} noValidate autoComplete="off">
-                    <TextField id="outlined-basic" label="Search Term" variant="outlined" />
-                </form>
             </div>
 
             <Results threads={getActive()} />

@@ -60,6 +60,9 @@ router.get("/owned", auth, async (req, res) => {
     try {
         const caboodle = await Caboodle.findOne({ user: req.user.id });
         const match = caboodle.drawer.filter(thread => thread.count > 0 || thread.partial > 0)
+        match.sort(function (a, b) {
+            return a.num - b.num;
+        });
         res.json(match);
     } catch (error) {
         console.error(error.message);

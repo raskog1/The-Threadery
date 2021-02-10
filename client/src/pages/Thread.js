@@ -151,7 +151,7 @@ function Thread(props) {
                 API.deleteOne(color.num);
             }
         }
-    }, [color.count, color.partial, color.wishlist]) //Wishlist changes should be handled elsewhere
+    }, [color.count, color.partial]) //Wishlist changes should be handled elsewhere
 
     const classes = useStyles();
 
