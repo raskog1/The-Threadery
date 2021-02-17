@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import API from "../utils/API";
 
 // Material UI
@@ -30,8 +30,10 @@ function Wishlist() {
     const [wishes, setWishes] = useState([]);
     const [filtered, setFiltered] = useState([]);
     const [search, setSearch] = useState();
-    const classes = useStyles();
 
+    const isInitialMount = useRef(true);
+
+    // Loads wishlist for current user on page load
     useEffect(() => {
         const getThreads = async () => {
             try {
@@ -45,16 +47,24 @@ function Wishlist() {
         getThreads();
     }, []);
 
+    // Checks for changes on search hook and filters wishlist
     useEffect(() => {
-        const newWishes = wishes.filter((thread) => {
-            return thread.name.toLowerCase().includes(search);
-        });
-        setFiltered(newWishes);
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+        } else {
+            const newWishes = wishes.filter((thread) => {
+                return thread.name.toLowerCase().includes(search.toLowerCase()) || thread.num.includes(search);
+            });
+            setFiltered(newWishes);
+        }
     }, [search]);
 
+    // Updates search hook with user input
     const handleInputChange = (e) => {
         setSearch(e.target.value);
     }
+
+    const classes = useStyles();
 
     return (
         <>

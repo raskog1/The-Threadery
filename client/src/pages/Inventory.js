@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import API from "../utils/API";
 
 // Material UI
@@ -33,19 +33,18 @@ const useStyles = makeStyles((theme) => ({
 function Inventory() {
     const { threads } = useContext(ThreadContext);
 
-    // const [input, setInput] = useState("");
     const [favThreads, setFavThreads] = useState([]);
     const [ownedThreads, setOwnedThreads] = useState([]);
     const [active, setActive] = useState({ all: true, fav: false, owned: false });
     const [filtered, setFiltered] = useState([]);
     const [search, setSearch] = useState();
 
-    const classes = useStyles();
+    const isInitialMount = useRef(true);
 
+    // Loads favorites/owned and sets to hooks
     useEffect(() => {
         const getThreads = async () => {
             try {
-                //setFiltered(threads.dmc);
                 const favResponse = await API.getFavorites();
                 setFavThreads(favResponse.data);
                 const ownResponse = await API.getOwned();
@@ -57,37 +56,44 @@ function Inventory() {
         getThreads();
     }, []);
 
+    // Checks for changes on search hook and filters active view
     useEffect(() => {
-        const threads = getActive().filter((thread) => {
-            return thread.name.toLowerCase().includes(search);
-        });
-        setFiltered(threads);
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+        } else {
+            const threads = getActive().filter((thread) => {
+                return thread.name.toLowerCase().includes(search.toLowerCase()) || thread.num.includes(search);
+            });
+            setFiltered(threads);
+        }
     }, [search]);
 
+    // Sets all to active
     const setAll = () => {
         setActive({ all: true, fav: false, owned: false });
         setFiltered([]);
     }
 
+    // Sets favorites to active
     const setFav = () => {
         setActive({ all: false, fav: true, owned: false });
         setFiltered([]);
     }
 
+    // Sets owned to active
     const setOwned = () => {
         setActive({ all: false, fav: false, owned: true });
         setFiltered([]);
     }
 
+    // Returns current active view: all/favorites/owned
     const getActive = () => {
-        if (active.owned && filtered.length === 0) {
+        if (active.owned) {
             return ownedThreads;
-        } else if (active.fav && filtered.length === 0) {
+        } else if (active.fav) {
             return favThreads;
-        } else if (active.all && filtered.length === 0) {
-            return threads.dmc;
         } else {
-            return filtered;
+            return threads.dmc;
         }
     }
 
@@ -97,9 +103,13 @@ function Inventory() {
 
     // }
     //}
+
+    // Updates search hook with user input
     const handleInputChange = (e) => {
         setSearch(e.target.value);
     }
+
+    const classes = useStyles();
 
     return (
         <>
@@ -109,7 +119,7 @@ function Inventory() {
                 <HomeBtn />
             </div>
 
-            <Results threads={getActive()} />
+            <Results threads={filtered.length > 0 ? filtered : getActive()} />
 
             <TabBar className="fixed-bottom" handleAdd={setAll} handleFav={setFav} handleOwned={setOwned} />
         </>

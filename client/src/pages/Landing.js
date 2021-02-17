@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // Material UI
@@ -6,10 +6,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Container, Fab } from "@material-ui/core";
 
 // Utilities and Context
+import quotes from "../assets/quotes.json";
 import UserContext from "../utils/UserContext";
 
-// Components
-
+// Styling
 const useStyles = makeStyles({
     root: {
         width: "90vw",
@@ -18,7 +18,11 @@ const useStyles = makeStyles({
         backgroundColor: "white",
         borderRadius: "10px",
         opacity: .8,
-        border: "red dashed"
+        border: "red dashed",
+        fontFamily: "'Cedarville Cursive', cursive",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "scroll"
     },
     buttons: {
         width: "100%",
@@ -34,9 +38,6 @@ const useStyles = makeStyles({
         flexDirection: "column",
         justifyContent: "center",
     },
-    handwriting: {
-        fontFamily: "'Cedarville Cursive', cursive"
-    },
     sansUnderline: {
         textDecoration: "none"
     }
@@ -45,13 +46,41 @@ const useStyles = makeStyles({
 function Landing() {
     const { user } = useContext(UserContext);
 
+    const [quote, setQuote] = useState({})
+
     const classes = useStyles();
+
+    useEffect(() => {
+        setQuote(randomQ());
+    }, []);
+
+    const randomQ = () => {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        return quotes[randomIndex];
+    }
+
+    const getTime = () => {
+        const time = new Date();
+        const hour = time.getHours();
+        if (hour > 4 && hour < 12) {
+            return "Good morning"
+        } else if (hour > 11 && hour < 18) {
+            return "Good afternoon"
+        } else if (hour > 17 && hour < 23) {
+            return "Good evening"
+        } else {
+            return "Good witching hour"
+        }
+    }
 
     return (
         <>
             <Container className={classes.root}>
-                <h2 className={classes.handwriting}>Good morning {user.first},</h2>
-                <h3 className={classes.handwriting}>You've got brains in your head, you've got feet in your shoes.  You can steer yourself any way you choose.</h3>
+                <h2>{getTime()} {user.first},</h2>
+                <div>
+                    <h2 style={{ fontSize: 20 }}>{quote.text}</h2>
+                    <h2 style={{ textAlign: "right", paddingRight: 20 }}>- {quote.author}</h2>
+                </div>
             </Container>
             <Container className={classes.btnContainer}>
                 <Link to="/inventory" className={classes.sansUnderline}>
