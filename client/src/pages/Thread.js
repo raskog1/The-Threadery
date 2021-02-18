@@ -151,6 +151,7 @@ function Thread(props) {
                 API.deleteOne(color.num);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [color.count, color.partial])
 
     const classes = useStyles();

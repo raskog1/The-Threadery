@@ -12,6 +12,8 @@ const useStyles = makeStyles({
     resultBox: {
         height: "70vh",
         overflow: "auto",
+        paddingRight: 10,
+        paddingLeft: 10
     },
     sansUnderline: {
         textDecoration: "none"

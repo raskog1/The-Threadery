@@ -3,7 +3,7 @@ import API from "../utils/API";
 
 // Material UI
 import { makeStyles } from "@material-ui/core/styles";
-import { Fab, TextField } from "@material-ui/core";
+// import { Fab, TextField } from "@material-ui/core";
 
 // Utilities and Contextimport 
 import ThreadContext from "../utils/ThreadContext";
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     buttons: {
         display: "flex",
         justifyContent: "space-between",
-        marginBottom: 60
+        marginBottom: 40
     },
     white: {
         backgroundColor: "white",
@@ -66,6 +66,7 @@ function Inventory() {
             });
             setFiltered(threads);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     // Sets all to active

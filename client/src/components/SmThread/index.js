@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     },
     colorBox: {
         height: "30px",
-        width: "30px",
+        width: "35px",
         margin: "5px",
         borderRadius: "15px"
     },

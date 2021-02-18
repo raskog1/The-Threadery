@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import API from "../utils/API";
+import axios from "axios";
 
 // Material UI
 import { makeStyles } from "@material-ui/core/styles";
-import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
+// import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
 
 // Components
 import BackBtn from "../components/BackBtn";
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     buttons: {
         display: "flex",
         justifyContent: "space-between",
-        marginBottom: 60
+        marginBottom: 40
     },
     white: {
         backgroundColor: "white",
@@ -27,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Wishlist() {
+    axios.defaults.headers.common["x-auth-token"] = localStorage.getItem("token");
+
     const [wishes, setWishes] = useState([]);
     const [filtered, setFiltered] = useState([]);
     const [search, setSearch] = useState();
@@ -57,6 +60,7 @@ function Wishlist() {
             });
             setFiltered(newWishes);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     // Updates search hook with user input
@@ -73,7 +77,7 @@ function Wishlist() {
                 <SearchBox handleInputChange={handleInputChange} />
                 <HomeBtn />
             </div>
-            <Results threads={filtered} />
+            <Results threads={filtered.length > 0 ? filtered : wishes} />
         </>
     )
 }

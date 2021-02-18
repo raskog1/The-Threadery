@@ -11,6 +11,7 @@ import ThreadContext from "./utils/ThreadContext";
 import './App.css';
 
 // Pages
+import Private from "./routing/Private";
 import Login from "./pages/Login";
 import Landing from "./pages/Landing";
 import Thread from "./pages/Thread";
@@ -78,13 +79,13 @@ function App() {
         <AuthContext.Provider value={{ authData: authState, setAuth: setAuthState }}>
           <Switch>
             <Route exact path="/" component={Login} />
-            <Route exact path="/home" component={Landing} />
+            <Private exact path="/home" component={Landing} />
             <ThreadContext.Provider value={{ threads: threads, setThreads: setThreads }}>
-              <Route exact path="/inventory" component={Inventory} />
-              <Route exact path="/projects" component={Projects} />
-              <Route exact path="/wishlist" component={Wishlist} />
-              <Route path="/thread" component={Thread} />
-              <Route exact path="/entry" component={Entry} />
+              <Private exact path="/inventory" component={Inventory} />
+              <Private exact path="/projects" component={Projects} />
+              <Private exact path="/wishlist" component={Wishlist} />
+              <Private path="/thread" component={Thread} />
+              <Private exact path="/entry" component={Entry} />
             </ThreadContext.Provider>
           </Switch>
         </AuthContext.Provider>

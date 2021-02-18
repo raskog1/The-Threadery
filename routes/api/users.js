@@ -45,11 +45,6 @@ router.post("/", async (req, res) => {
             },
         };
 
-        // caboodle = new Caboodle({ user });
-
-        // await caboodle.save();
-        // console.log(payload);
-
         jwt.sign(
             payload,
             config.get("jwtSecret"),

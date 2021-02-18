@@ -6,7 +6,7 @@ const config = {
     },
 };
 
-export default {
+const API = {
     // Login/User Methods
     loginUser: function (info) {
         return axios.post("/api/auth", info);
@@ -57,3 +57,5 @@ export default {
         return axios.get("/api/threads/DMC/" + id);
     }
 }
+
+export default API;
