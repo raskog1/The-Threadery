@@ -10,19 +10,19 @@ const PORT = process.env.PORT || 3001;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Serve up static assets for deployment
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static("client/build"));
-}
-
 // Add routes, both API and view
 app.use(routes);
 
-// The "catchall" handler:  for any request that doesn't
-// match one above, send back React's index.html file
-app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-});
+// Serve up static assets for deployment
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static("client/build"));
+
+    // The "catchall" handler:  for any request that doesn't
+    // match one above, send back React's index.html file
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    });
+}
 
 // Connect to the Mongo DB
 const db = config.get("mongoURI");
