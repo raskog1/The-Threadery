@@ -23,7 +23,7 @@ const useStyles = makeStyles({
         marginBottom: "5px",
         marginLeft: "10px",
         marginRight: "10px",
-        fontSize: "16px"
+        fontSize: "14px"
     },
     sansUnderline: {
         textDecoration: "none"
