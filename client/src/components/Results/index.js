@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+
+// Utility Components
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from "react-virtualized-auto-sizer"
 
@@ -42,12 +44,14 @@ function Results(props) {
         </Link>
     )
 
+    // Autosize required to feed in height/width from parent, dynamically to List
     return (
         <Container className={classes.resultBox}>
             <AutoSizer>
                 {({ height, width }) => (
-                    <List width={width}
+                    <List
                         height={height}
+                        width={width}
                         itemCount={props.threads.length}
                         itemSize={45}>
                         {Row}

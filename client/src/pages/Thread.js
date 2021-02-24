@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import API from "../utils/API";
 
 // Material UI
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Card, CardActions, CardContent, Slide, Snackbar } from '@material-ui/core';
-import { Box, Button, IconButton, Slider } from "@material-ui/core";
+import { Box, Button, IconButton } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 
 // Icons
@@ -17,6 +17,7 @@ import StarOutlinedIcon from '@material-ui/icons/StarOutlined';
 // Components
 import BackBtn from "../components/BackBtn";
 import HomeBtn from "../components/HomeBtn";
+import PSlider from "../components/PSlider";
 
 // Styles
 const useStyles = makeStyles({
@@ -68,46 +69,18 @@ const useStyles = makeStyles({
     }
 });
 
-// Slider Component
-const PrettoSlider = withStyles({
-    root: {
-        color: '#aebedf',
-        height: 8,
-    },
-    thumb: {
-        height: 24,
-        width: 24,
-        backgroundColor: '#fff',
-        border: '2px solid currentColor',
-        marginTop: -8,
-        marginLeft: -12,
-        '&:focus, &:hover, &$active': {
-            boxShadow: 'inherit',
-        },
-    },
-    active: {},
-    valueLabel: {
-        left: 'calc(-50% + 4px)',
-    },
-    track: {
-        height: 10,
-        borderRadius: 5,
-    },
-    rail: {
-        height: 10,
-        borderRadius: 5,
-    },
-})(Slider);
-
 function Thread(props) {
     const { tColor } = props.location.state;
+
+    // Tracks slider value while mouse is held down
+    const [sliderValue, setSlider] = useState(tColor.partial || 0)
 
     const [color, setColor] = useState({
         num: tColor.num,
         name: tColor.name,
         color: tColor.color,
         count: tColor.count || 0,
-        partial: tColor.partial || 0,
+        partial: tColor.partial || sliderValue,
         note: tColor.note || "",
         favorite: tColor.favorite || false,
         wishlist: tColor.wishlist || false,
@@ -121,7 +94,7 @@ function Thread(props) {
 
     // If owned/favorite are clicked from all inventory, it does not populate info without the useEffect...
 
-    // Attemts to grab thread info from user's drawer to populate color hook
+    // Attempts to grab thread info from user's drawer to populate color hook
     useEffect(() => {
         const getColor = async () => {
             try {
@@ -131,7 +104,8 @@ function Thread(props) {
                 if (colorId) {
                     const currentThread = await API.getOne(colorId);
                     if (currentThread.data) {
-                        setColor(currentThread.data)
+                        setColor(currentThread.data);
+                        setSlider(currentThread.data.partial);
                     }
                 }
             } catch (error) {
@@ -154,9 +128,11 @@ function Thread(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [color.count, color.partial])
 
-    const classes = useStyles();
+    // Updates 'partial' field on slider change, which updates database
+    const onChangeCommitted = (e, val) => setColor({ ...color, partial: val });
 
-    const onChange = (e, val) => setColor({ ...color, partial: val });
+    // Updates slider value without commitment
+    const onChange = (e, val) => setSlider(val);
 
     // Returns empty or filled star based on favorite value
     const checkFav = () => {
@@ -209,6 +185,8 @@ function Thread(props) {
         return newThread;
     };
 
+    const classes = useStyles();
+
     return (
         <>
             <BackBtn />
@@ -227,13 +205,10 @@ function Thread(props) {
 
                     <Box>
                         <Typography component="p">Partial Quantity</Typography>
-                        <PrettoSlider
-                            // value={partial}  This sets the slider on an owned thread, but disables sliding
-                            valueLabelDisplay="auto"
-                            aria-label="pretto slider"
-                            defaultValue={color.partial}
-                            step={25}
-                            onChangeCommitted={(e, val) => onChange(e, val)}
+                        <PSlider
+                            sliderValue={sliderValue}
+                            onChange={onChange}
+                            onChangeCommitted={onChangeCommitted}
                         />
                         <Typography component="p">Change Full Quantity</Typography>
                         <Box className={classes.center}>
