@@ -23,7 +23,7 @@ const useStyles = makeStyles({
         marginBottom: "5px",
         marginLeft: "10px",
         marginRight: "10px",
-        fontSize: "14px"
+        fontSize: "16px",
     },
     sansUnderline: {
         textDecoration: "none"
@@ -44,15 +44,15 @@ function SmThread(props) {
                 direction="row"
                 justify="flex-start"
                 alignItems="center">
-                <Grid item>
-                    <h3 className={classes.fixMargin}>{props.color.num}</h3>
-                </Grid>
+                {/* <Grid item> */}
+                <h3 className={classes.fixMargin} style={{ width: 30 }}>{props.color.num}</h3>
+                {/* </Grid> */}
                 <Grid item>
                     <h3 className={classes.fixMargin}>{props.color.name}</h3>
                 </Grid>
-                <Grid item>
+                {/* <Grid item>
                     <h3 className={classes.fixMargin}>{props.color.quantity}</h3>
-                </Grid>
+                </Grid> */}
             </Grid>
         </Paper>
 

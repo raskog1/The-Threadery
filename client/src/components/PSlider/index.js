@@ -37,10 +37,9 @@ const PrettoSlider = withStyles({
 function PSlider(props) {
     return (
         <PrettoSlider
-            value={props.sliderValue} //This sets the slider on an owned thread, but disables sliding
+            value={props.sliderValue}
             valueLabelDisplay="auto"
             aria-label="pretto slider"
-            //defaultValue={props.partial}
             marks={true}
             step={25}
             onChange={(e, val) => props.onChange(e, val)}
