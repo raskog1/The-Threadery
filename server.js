@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const compression = require('compression')
 const path = require("path");
 const config = require("config");
 const routes = require("./routes");
@@ -12,6 +13,8 @@ app.use(express.json());
 
 // Add routes, both API and view
 app.use(routes);
+
+app.use(compression());
 
 // Serve up static assets for deployment
 if (process.env.NODE_ENV === "production") {

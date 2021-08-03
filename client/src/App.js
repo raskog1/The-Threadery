@@ -4,11 +4,11 @@ import axios from "axios";
 
 // Utilities and createContext
 import API from "./utils/API";
+import { AuthProvider } from "./utils/AuthContext";
 import setAuthToken from "./utils/setAuthToken";
 import UserContext from "./utils/UserContext";
-import AuthContext from "./utils/AuthContext";
 import ThreadContext from "./utils/ThreadContext";
-import './App.css';
+import "./App.css";
 
 // Pages
 import Private from "./routing/Private";
@@ -27,30 +27,17 @@ function App() {
     email: "",
     favorites: [],
     owned: [],
-    wishlist: []
-  });
-
-  const [authState, setAuthState] = useState({
-    token: localStorage.getItem("token"),
-    isAuthenticated: null,
-    loading: true,
-    user: null,
-    role: null,
+    wishlist: [],
   });
 
   const [threads, setThreads] = useState({
-    dmc: []
-  })
+    dmc: [],
+  });
 
   useEffect(() => {
-    if (localStorage.token) {
-      setAuthToken(localStorage.token);
-    } else {
-      setAuthState({
-        isAuthenticated: false,
-        loading: false,
-        role: null,
-      });
+    const user = JSON.parse(localStorage.getItem("auth"));
+    if (user.token) {
+      setAuthToken(user.token);
     }
 
     // Set up user context
@@ -64,10 +51,9 @@ function App() {
 
     // Set all universal thread inventories context
     try {
-      API.getAllDMC()
-        .then((res) => {
-          setThreads({ dmc: res.data });
-        })
+      API.getAllDMC().then((res) => {
+        setThreads({ dmc: res.data });
+      });
     } catch (error) {
       console.error(error.response.data);
     }
@@ -76,11 +62,14 @@ function App() {
   return (
     <Router>
       <UserContext.Provider value={{ user: userState, setUser: setUserState }}>
-        <AuthContext.Provider value={{ authData: authState, setAuth: setAuthState }}>
+        <AuthProvider>
+          {" "}
           <Switch>
             <Route exact path="/" component={Login} />
             <Private exact path="/home" component={Landing} />
-            <ThreadContext.Provider value={{ threads: threads, setThreads: setThreads }}>
+            <ThreadContext.Provider
+              value={{ threads: threads, setThreads: setThreads }}
+            >
               <Private exact path="/inventory" component={Inventory} />
               <Private exact path="/projects" component={Projects} />
               <Private exact path="/wishlist" component={Wishlist} />
@@ -88,7 +77,7 @@ function App() {
               <Private exact path="/entry" component={Entry} />
             </ThreadContext.Provider>
           </Switch>
-        </AuthContext.Provider>
+        </AuthProvider>
       </UserContext.Provider>
     </Router>
   );

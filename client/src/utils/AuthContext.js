@@ -1,14 +1,36 @@
-import React from "react";
+import React, { useEffect, useReducer } from "react";
 
-const AuthContext = React.createContext({
-    authData: {
-        token: localStorage.getItem("token"),
-        isAuthenticated: null,
-        loading: true,
-        user: null,
-        role: null,
-    },
-    setAuth: () => { },
-});
+let reducer = (auth, newAuth) => {
+  if (newAuth === null) {
+    localStorage.removeItem("auth");
+    return initialAuth;
+  }
+  return { ...auth, ...newAuth };
+};
 
-export default AuthContext;
+const AuthContext = React.createContext();
+
+const initialAuth = {
+  token: null,
+  isAuthenticated: null,
+  loading: null,
+  user: null,
+};
+
+const localAuth = JSON.parse(localStorage.getItem("auth"));
+
+function AuthProvider(props) {
+  const [auth, setAuth] = useReducer(reducer, localAuth || initialAuth);
+
+  useEffect(() => {
+    localStorage.setItem("auth", JSON.stringify(auth));
+  }, [auth]);
+
+  return (
+    <AuthContext.Provider value={{ auth, setAuth }}>
+      {props.children}
+    </AuthContext.Provider>
+  );
+}
+
+export { AuthContext, AuthProvider };

@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 function TabBar(props) {
     const classes = useStyles();
 
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = React.useState(props.value);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -37,7 +37,7 @@ function TabBar(props) {
     return (
         <Paper className={classes.root} elevation={24}>
             <Tabs
-                value={value}
+                // value={value}
                 className={classes.tabs}
                 onChange={handleChange}
                 variant="fullWidth"

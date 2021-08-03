@@ -14,16 +14,29 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function BackBtn() {
+function BackBtn(props) {
     const classes = useStyles();
     let history = useHistory();
+
+    function handleBack() {
+        // if (props) {
+        //     console.log("props exist")
+        //     history.push(
+        //         "/inventory"
+
+        //     )
+        // } else {
+        console.log("no props")
+        history.goBack();
+        // }
+    }
 
     return (
         <Fab
             color="secondary"
             aria-label="add"
             className={classes.margin}
-            onClick={() => history.goBack()}
+            onClick={handleBack}
         >
             <BackspaceIcon />
         </Fab>

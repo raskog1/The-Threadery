@@ -1,19 +1,19 @@
 import React, { useContext } from "react";
 import { Route, Redirect } from "react-router-dom";
-import AuthContext from "../utils/AuthContext";
+import { AuthContext } from "../utils/AuthContext";
 
 const Private = ({ component: Component, ...rest }) => {
-  const { authData } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
 
   return (
     <Route
       {...rest}
       render={(props) =>
-        !authData.isAuthenticated && !authData.loading ? (
+        !auth.isAuthenticated && !auth.loading ? (
           <Redirect to="/" />
         ) : (
-            <Component {...props} />
-          )
+          <Component {...props} />
+        )
       }
     />
   );

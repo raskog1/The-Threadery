@@ -34,11 +34,12 @@ function Results(props) {
         <Link to={{
             pathname: "/thread",
             search: "?color=" + tColor[index].num,
-            state: { tColor: tColor[index] }
+            state: { tColor: tColor[index], state: props.state }
         }}
             className={classes.sansUnderline}
             key={key}
             style={style}
+        // onClick={() => localStorage.setItem("capture", JSON.stringify({ status: props.state.current, search: props.state.search }))}
         >
             <SmThread color={tColor[index]} />
         </Link>

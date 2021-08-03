@@ -70,7 +70,7 @@ const useStyles = makeStyles({
 });
 
 function Thread(props) {
-    const { tColor } = props.location.state;
+    const { tColor, state } = props.location.state;
 
     // Tracks slider value while mouse is held down
     const [sliderValue, setSlider] = useState(tColor.partial || 0)
@@ -189,7 +189,7 @@ function Thread(props) {
 
     return (
         <>
-            <BackBtn />
+            <BackBtn state={state} />
             <HomeBtn />
 
             <Card className={classes.root}>

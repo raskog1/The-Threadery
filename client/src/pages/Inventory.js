@@ -32,10 +32,11 @@ const useStyles = makeStyles((theme) => ({
 
 function Inventory() {
     const { threads } = useContext(ThreadContext);
+    const capture = JSON.parse(localStorage.getItem("capture"));
 
     const [favThreads, setFavThreads] = useState([]);
     const [ownedThreads, setOwnedThreads] = useState([]);
-    const [active, setActive] = useState({ all: true, fav: false, owned: false });
+    const [active, setActive] = useState(capture ? capture.status : { all: true, fav: false, owned: false });
     const [filtered, setFiltered] = useState([]);
     const [search, setSearch] = useState();
 
@@ -98,13 +99,6 @@ function Inventory() {
         }
     }
 
-    // const sortBy = (style) => {
-    //     const threads = getActive();
-    //     const sorted = threads.sort(a, b) => {
-
-    // }
-    //}
-
     // Updates search hook with user input
     const handleInputChange = (e) => {
         setSearch(e.target.value);
@@ -120,9 +114,20 @@ function Inventory() {
                 <HomeBtn />
             </div>
 
-            <Results threads={filtered.length > 0 ? filtered : getActive()} />
+            <Results
+                threads={filtered.length > 0 ? filtered : getActive()}
+            />
 
-            <TabBar className="fixed-bottom" handleAdd={setAll} handleFav={setFav} handleOwned={setOwned} />
+            <TabBar
+                className="fixed-bottom"
+                value={() => {
+                    if (active.fav) return 1;
+                    else if (active.owned) return 2;
+                    else return 0;
+                }}
+                handleAdd={setAll}
+                handleFav={setFav}
+                handleOwned={setOwned} />
         </>
     )
 }
