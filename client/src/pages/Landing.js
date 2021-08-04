@@ -52,7 +52,6 @@ function Landing() {
 
   useEffect(() => {
     setQuote(randomQ());
-    // localStorage.clear();
   }, []);
 
   const randomQ = () => {

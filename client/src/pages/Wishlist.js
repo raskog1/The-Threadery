@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import API from "../utils/API";
-import axios from "axios";
 
 // Material UI
 import { makeStyles } from "@material-ui/core/styles";
