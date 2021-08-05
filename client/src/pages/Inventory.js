@@ -5,8 +5,9 @@ import API from "../utils/API";
 import { makeStyles } from "@material-ui/core/styles";
 // import { Fab, TextField } from "@material-ui/core";
 
-// Utilities and Contextimport
+// Utilities and Context
 import ThreadContext from "../utils/ThreadContext";
+import UserContext from "../utils/UserContext";
 
 // Components
 import BackBtn from "../components/BackBtn";
@@ -32,15 +33,15 @@ const useStyles = makeStyles((theme) => ({
 
 function Inventory() {
   const { threads } = useContext(ThreadContext);
-  const capture = JSON.parse(localStorage.getItem("capture"));
+  const { user, setUser } = useContext(UserContext);
 
   const [favThreads, setFavThreads] = useState([]);
   const [ownedThreads, setOwnedThreads] = useState([]);
-  const [active, setActive] = useState(
-    capture ? capture.status : { all: true, fav: false, owned: false }
-  );
+  const [active, setActive] = useState(user.history.active);
   const [filtered, setFiltered] = useState([]);
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState(
+    user.history.search ? user.history.search : ""
+  );
 
   const isInitialMount = useRef(true);
 
@@ -77,18 +78,33 @@ function Inventory() {
 
   // Sets all to active
   const setAll = () => {
+    setSearch("");
+    setUser({
+      ...user,
+      history: { active: { all: true, fav: false, owned: false } },
+    });
     setActive({ all: true, fav: false, owned: false });
     setFiltered([]);
   };
 
   // Sets favorites to active
   const setFav = () => {
+    setSearch("");
+    setUser({
+      ...user,
+      history: { active: { all: false, fav: true, owned: false } },
+    });
     setActive({ all: false, fav: true, owned: false });
     setFiltered([]);
   };
 
   // Sets owned to active
   const setOwned = () => {
+    setSearch("");
+    setUser({
+      ...user,
+      history: { active: { all: false, fav: false, owned: true } },
+    });
     setActive({ all: false, fav: false, owned: true });
     setFiltered([]);
   };
@@ -107,6 +123,7 @@ function Inventory() {
   // Updates search hook with user input
   const handleInputChange = (e) => {
     setSearch(e.target.value);
+    setUser({ ...user, history: { ...user.history, search: e.target.value } });
   };
 
   const classes = useStyles();
@@ -115,7 +132,7 @@ function Inventory() {
     <>
       <div className={classes.buttons}>
         <BackBtn />
-        <SearchBox handleInputChange={handleInputChange} />
+        <SearchBox handleInputChange={handleInputChange} search={search} />
         <HomeBtn />
       </div>
 

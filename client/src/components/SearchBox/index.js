@@ -24,6 +24,7 @@ function SearchBox(props) {
           id="outlined-basic"
           label="Search Term"
           variant="outlined"
+          value={props.search}
           onChange={props.handleInputChange}
         />
       </form>

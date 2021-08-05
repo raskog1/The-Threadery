@@ -88,8 +88,6 @@ export default function Thread(props) {
     brand: "DMC",
   });
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("");
 
   // Prevents [count, partial] useEffect on initial mount
   const isInitialMount = useRef(true);
@@ -193,15 +191,9 @@ export default function Thread(props) {
 
   // Toggles snackbar color/message while updating wishlist inventory
   const toggleWish = () => {
-    if (!color.wishlist) {
-      API.addOne({ ...color, wishlist: true });
-      setMessage("Added to Wishlist");
-      setSeverity("success");
-    } else {
-      API.addOne({ ...color, wishlist: false, wishCount: 0 });
-      setMessage("Removed from Wishlist");
-      setSeverity("info");
-    }
+    !color.wishlist
+      ? API.addOne({ ...color, wishlist: true })
+      : API.addOne({ ...color, wishlist: false, wishCount: 0 });
 
     setColor({ ...color, wishlist: !color.wishlist });
     setOpen(true);
@@ -274,9 +266,9 @@ export default function Thread(props) {
           elevation={20}
           variant="filled"
           onClose={handleClose}
-          severity={severity}
+          severity={color.wishlist ? "success" : "info"}
         >
-          {message}
+          {color.wishlist ? "Added to Wishlist" : "Removed from Wishlist"}
         </MuiAlert>
       </Snackbar>
     </>
