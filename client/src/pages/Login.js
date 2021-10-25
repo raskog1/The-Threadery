@@ -6,7 +6,6 @@ import axios from "axios";
 import API from "../utils/API";
 import { AuthContext } from "../utils/AuthContext";
 import UserContext from "../utils/UserContext";
-import setAuthToken from "../utils/setAuthToken";
 
 // Material UI
 import { makeStyles } from "@material-ui/core/styles";

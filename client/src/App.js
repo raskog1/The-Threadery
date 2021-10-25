@@ -72,7 +72,6 @@ function App() {
     <Router>
       <UserContext.Provider value={{ user: userState, setUser: setUserState }}>
         <AuthProvider>
-          {" "}
           <Switch>
             <Route exact path="/" component={Login} />
             <Private exact path="/home" component={Landing} />

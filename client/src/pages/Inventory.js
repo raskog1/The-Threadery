@@ -39,9 +39,7 @@ function Inventory() {
   const [ownedThreads, setOwnedThreads] = useState([]);
   const [active, setActive] = useState(user.history.active);
   const [filtered, setFiltered] = useState([]);
-  const [search, setSearch] = useState(
-    user.history.search ? user.history.search : ""
-  );
+  const [search, setSearch] = useState(user.history.search || "");
 
   const isInitialMount = useRef(true);
 
@@ -140,11 +138,6 @@ function Inventory() {
 
       <TabBar
         className="fixed-bottom"
-        value={() => {
-          if (active.fav) return 1;
-          else if (active.owned) return 2;
-          else return 0;
-        }}
         handleAdd={setAll}
         handleFav={setFav}
         handleOwned={setOwned}
