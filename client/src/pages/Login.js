@@ -53,7 +53,7 @@ function Login() {
 
   // Other Variables
   const { auth, setAuth } = useContext(AuthContext);
-  const { setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const { first, last, email, password } = credentials;
 
   const classes = useStyles();
@@ -86,9 +86,8 @@ function Login() {
 
       // setUser MUST fire before setAuth to get desired info on login
       await setUser({
+        ...user,
         first: res.data.user.first,
-        last: res.data.user.last,
-        email: res.data.user.email,
       });
 
       if (type.signup) {

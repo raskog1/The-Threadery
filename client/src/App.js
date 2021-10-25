@@ -23,8 +23,6 @@ import Entry from "./pages/Entry";
 function App() {
   const [userState, setUserState] = useState({
     first: "",
-    last: "",
-    email: "",
     favorites: [],
     owned: [],
     wishlist: [],
@@ -50,8 +48,6 @@ function App() {
         setUserState({
           ...userState,
           first: res.data.first,
-          last: res.data.last,
-          email: res.data.email,
         });
       });
     } catch (error) {
@@ -70,8 +66,10 @@ function App() {
 
   return (
     <Router>
-      <UserContext.Provider value={{ user: userState, setUser: setUserState }}>
-        <AuthProvider>
+      <AuthProvider>
+        <UserContext.Provider
+          value={{ user: userState, setUser: setUserState }}
+        >
           <Switch>
             <Route exact path="/" component={Login} />
             <Private exact path="/home" component={Landing} />
@@ -85,8 +83,8 @@ function App() {
               <Private exact path="/entry" component={Entry} />
             </ThreadContext.Provider>
           </Switch>
-        </AuthProvider>
-      </UserContext.Provider>
+        </UserContext.Provider>
+      </AuthProvider>
     </Router>
   );
 }

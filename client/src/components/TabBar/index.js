@@ -3,7 +3,6 @@ import React, { useState } from "react";
 // Material UI
 import { makeStyles } from "@material-ui/core/styles";
 import { Divider, Paper, Tab, Tabs } from "@material-ui/core";
-
 import StarIcon from "@material-ui/icons/Star";
 
 const useStyles = makeStyles({
@@ -35,7 +34,7 @@ function a11yProps(index) {
 function TabBar(props) {
   const classes = useStyles();
 
-  const [value, setValue] = useState();
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
