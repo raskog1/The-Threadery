@@ -38,30 +38,34 @@ function App() {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("auth"));
-    if (user.token) {
+    if (user) {
       setAuthToken(user.token);
     }
 
     // Set up user context
-    try {
-      axios.get("/api/auth").then((res) => {
-        setUserState({
-          ...userState,
-          first: res.data.first,
-        });
-      });
-    } catch (error) {
-      console.error(error.response.data);
-    }
+    const setUser = async () => {
+      try {
+        const res = await API.getUser();
+        console.log(res);
+        setUserState({ ...userState, first: res.data.first });
+      } catch (error) {
+        localStorage.removeItem("auth");
+        console.error(error);
+      }
+    };
 
     // Set all universal thread inventories context
-    try {
-      API.getAllDMC().then((res) => {
-        setThreads({ dmc: res.data });
-      });
-    } catch (error) {
-      console.error(error.response.data);
-    }
+    const getThreads = async () => {
+      try {
+        const res = await API.getAllDMC();
+        setThreads({ ...threads, dmc: res.data });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    setUser();
+    getThreads();
   }, []);
 
   return (
